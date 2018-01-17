@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "ServerMain.h"
 
-#define MAX_BUFF_LEN       (10 * 1024 * 1024)
+#define MAX_BUFF_LEN       (300 * 1024 * 1024)
 
 class SocketInfo
 {
@@ -29,8 +29,8 @@ public:
 			recv_ln = m_socket_ptr->recv(m_buf + offset, MAX_BUFF_LEN - offset, 0);
 
 			offset += recv_ln;
-            printf("offset %lu, recv_ln %d \n", offset, recv_ln);
-			if (0 == recv_ln)
+            //printf("offset %lu, recv_ln %d \n", offset, recv_ln);
+			if (0 == recv_ln || offset == MAX_BUFF_LEN)
 			{
 				m_socket_ptr->close();
 				break;
@@ -61,12 +61,16 @@ int main(int agrs, char *argv[])
 {
     CPPTcpServerSocket server;
 	server.listen(18080, 1);
+	char *buff;
 
     while (true)
 	{
 		int fd = server.accept(-1);
-		std::thread thrd(std::bind(Handler, fd));
-		thrd.detach();
+		SocketInfo info(fd);
+		info.ReceiveData();
+		printf("%lu\n", info.GetBuff(&buff));
+		//std::thread thrd(std::bind(Handler, fd));
+		//thrd.detach();
 	}
 	
     return 0;
