@@ -1,4 +1,4 @@
-#include "CPPSocket/CPPSocket.h"
+#include "CPPSocket.h"
 
 CPPSocket::CPPSocket(){
     m_sock = -1;

@@ -10,7 +10,7 @@
 
 #include <string.h>
 #include <netinet/tcp.h>
-#include "CPPSocket/CPPSocket.h"
+#include "CPPSocket.h"
 
 class CPPTcpClientSocket : public CPPSocket{
 public:

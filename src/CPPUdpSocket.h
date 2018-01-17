@@ -10,7 +10,7 @@
 
 #include <string.h>
 #include <list>
-#include "CPPSocket/CPPSocket.h"
+#include "CPPSocket.h"
 
 class CPPUdpTransmitSocket : public CPPSocket{
 public:

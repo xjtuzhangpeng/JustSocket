@@ -1,4 +1,4 @@
-#include "CPPSocket/CPPTcpSocket.h"
+#include "CPPTcpSocket.h"
 #include <thread>
 
 CPPTcpClientSocket::CPPTcpClientSocket()

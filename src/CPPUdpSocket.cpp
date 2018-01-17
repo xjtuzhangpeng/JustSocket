@@ -1,4 +1,4 @@
-#include "CPPSocket/CPPUdpSocket.h"
+#include "CPPUdpSocket.h"
 
 CPPUdpTransmitSocket::CPPUdpTransmitSocket()
 : CPPSocket()

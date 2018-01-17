@@ -25,7 +25,7 @@ class CPPSocket {
 public:
     CPPSocket();
     CPPSocket(int fd); // constructs a socket from a file descriptor
-    ~CPPSocket();
+    virtual ~CPPSocket();
     bool close();
     int recv(void *buf, size_t len, int flags = 0);
     int send(void *buf, size_t len, int flags = 0);
