@@ -1,0 +1,6 @@
+CFLAGS1   = -O2 -g -Wall -Wno-deprecated -fPIC
+CFLAGS1  += -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES
+CXXFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES
+CC        = g++ -std=c++11
+IPPROUT   = ./lib
+
