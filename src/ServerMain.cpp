@@ -2,6 +2,7 @@
 
 #define TCP_PORT          (18080)
 #define MAX_CONNECTED     (20)
+#define MY_MAX_BUFF_LEN   (300 * 1024 * 1024)
 
 SocketInfo g_Server(TCP_PORT);
 
@@ -22,13 +23,13 @@ int main(int agrs, char *argv[])
 
     sleep(10);
     sid        = sid_head;
-    char  *buf = new char[MAX_BUFF_LEN];
+    char  *buf = new char[MY_MAX_BUFF_LEN];
     size_t len = 0;
 
     for (int i = 0; i < 10; i++)
     {
         sid += int2str(i);
-        while ( !(len = g_Server.GetBuff(sid, buf, MAX_BUFF_LEN)) )
+        while ( !(len = g_Server.GetBuff(sid, buf, MY_MAX_BUFF_LEN)) )
         {
             usleep(10);
         }

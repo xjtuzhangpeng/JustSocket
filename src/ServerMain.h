@@ -15,8 +15,12 @@
 #include "CPPTcpSocket.h"
 #include "CPPUdpSocket.h"
 
+#define _NODE_LINK_
+#ifdef  _NODE_LINK_
 #define MAX_BUFF_LEN       (1 * 1024 * 1024)
-
+#else
+#define MAX_BUFF_LEN       (100 * 1024 * 1024)
+#endif
 //////////////////////////////////MAP///////////////////////////////////////
 
 template <typename T>
@@ -90,31 +94,140 @@ static inline std::string int2str(const int &input)
     return output;
 }
 
+#define BUFF_NODE_LEN   (1 * 1024 * 1024)
+struct BuffNode
+{
+    size_t            offset;
+    char             *buff;
+    struct BuffNode  *next;
+
+    BuffNode() : offset(0), next(NULL)
+    {
+        buff = new char[BUFF_NODE_LEN];
+    }
+};
+
 class BuffLink
 {
 public:
-    ;
+    BuffLink()
+    {
+        link = new BuffNode();
+        tail = head = link;
+    }
+
+    ~BuffLink()
+    {
+        struct BuffNode *tmp       = head;
+        struct BuffNode *to_delate = NULL;
+        for (;;)
+        {
+            if (tmp == NULL)
+            {
+                break;
+            }
+            to_delate = tmp;
+            tmp       = tmp->next;
+
+            delete to_delate->buff;
+            to_delate->buff = NULL;
+            delete to_delate;
+            to_delate = NULL;
+        }
+    }
+
+    struct BuffNode * GetTail()
+    {
+        if (tail->offset == BUFF_NODE_LEN)
+        {
+            Add();
+        }
+        return tail;
+    }
+
+    size_t BuffLen()
+    {
+        size_t           len = 0;
+        struct BuffNode *tmp = head;
+        for (;;)
+        {
+            if (tmp == NULL)
+            {
+                break;
+            }
+
+            len += tmp->offset;
+            tmp  = tmp->next;
+        }
+
+        return len;
+    }
+
+    size_t CopyBuff(char *buf, size_t buf_len)
+    {
+        size_t           len     = 0;
+        size_t           cpy_len = 0;
+        struct BuffNode *tmp     = head;
+        for (;;)
+        {
+            if (tmp == NULL)
+            {
+                break;
+            }
+
+            if ((len + tmp->offset) > buf_len)
+            {
+                cpy_len = buf_len - len;
+            }
+            else
+            {
+                cpy_len = tmp->offset;
+            }
+            memcpy(buf + len, tmp->buff, cpy_len);
+            len += cpy_len;
+            tmp  = tmp->next;
+        }
+
+        return len;
+    }
 
 private:
-    struct BuffNode
+    void Add()
     {
-        char             *;
-        struct BuffNode  *next;
-    };
+        struct BuffNode *tmp = new BuffNode();
+        tail->next = tmp;
+        tail       = tmp;
+    }
+
+    struct BuffNode *link;
+    struct BuffNode *head;
+    struct BuffNode *tail;
 };
 
 class TaskInfo
 {
 public:
     TaskInfo(std::string& command, size_t bufflen = MAX_BUFF_LEN) :
-        m_command(command), m_buff_len(bufflen), m_offset(0), m_socket_closed(false)
+#ifdef _NODE_LINK_
+#else
+        m_buff_len(bufflen),
+        m_offset(0),
+#endif
+        m_command(command),
+        m_socket_closed(false)
     {
+#ifdef _NODE_LINK_
+#else
         m_buff = new char[m_buff_len];
+#endif
     }
 
     ~TaskInfo()
     {
+#ifdef _NODE_LINK_
+#else
         delete m_buff;
+#endif
     }
 
     void SetSocketClosed(bool closed)
@@ -135,11 +248,14 @@ public:
     }
 
 //private:
-    std::string    m_command;
+#ifdef _NODE_LINK_
+    BuffLink       m_buff_link;
+#else
     char          *m_buff;
     size_t         m_buff_len;
-	size_t         m_offset;
-
+    size_t         m_offset;
+#endif
+    std::string    m_command;
     std::mutex     m_mutex;
     bool           m_socket_closed;
 };
@@ -175,8 +291,12 @@ public:
 
         if (task->IsSocketClosed())
         {
+#ifdef _NODE_LINK_
+            len = task->m_buff_link.CopyBuff(buf, buff_len);
+#else
             len = (buff_len > task->m_offset) ? task->m_offset : buff_len;
             memcpy(buf, task->m_buff, len);
+#endif
             m_task_map.erase( m_task_map.find(sessionId) );
             delete task;
             task = NULL;
@@ -279,16 +399,34 @@ private:
 
         while (true)
         {
-            m_socket->hasData(-1);
+#ifdef _NODE_LINK_
+            struct BuffNode * node = task->m_buff_link.GetTail();
+            buf     = node->buff + node->offset;
+            buf_len = BUFF_NODE_LEN - node->offset;
+#else
             buf     = task->m_buff + task->m_offset;
             buf_len = task->m_buff_len - task->m_offset;
+#endif
+            m_socket->hasData(-1);
             recv_ln = m_socket->recv(buf, buf_len, 0);
-
+#ifdef _NODE_LINK_
+            node->offset   += recv_ln;
+            printf("m_offset %lu, recv_ln %d \n", node->offset, recv_ln);
+#else
             task->m_offset += recv_ln;
-            printf("m_offset %d, recv_ln %d \n", task->m_offset, recv_ln);
-            if (recv_ln <= 0 || task->m_offset == task->m_buff_len)
+            printf("m_offset %lu, recv_ln %d \n", task->m_offset, recv_ln);
+#endif
+            if (recv_ln <= 0
+#ifdef _NODE_LINK_
+#else
+                || task->m_offset == task->m_buff_len
+#endif
+                )
             {
+#ifdef _NODE_LINK_
+#else
                 task->m_offset -= recv_ln;
+#endif
                 task->SetSocketClosed(true);
                 m_socket->close();
                 PopTask(); // delete the last task;
