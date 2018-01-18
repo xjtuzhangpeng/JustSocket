@@ -81,7 +81,7 @@ bool CPPTcpServerSocket::listen(short port, int maxConnections){
     m_port = port;
     local.sin_family = AF_INET;
     local.sin_port = htons(port);
-    local.sin_addr.s_addr = htonl(INADDR_ANY);
+    local.sin_addr.s_addr = inet_addr("127.0.0.1");
     
     if (!open())
         return false;

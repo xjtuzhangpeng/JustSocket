@@ -1,78 +1,41 @@
-#include <thread>
-#include <stdio.h>
 #include "ServerMain.h"
 
-#define MAX_BUFF_LEN       (300 * 1024 * 1024)
+#define TCP_PORT          (18080)
+#define MAX_CONNECTED     (20)
 
-class SocketInfo
-{
-public:
-    SocketInfo(int fd)
-	{
-		offset       = 0;
-        m_socket_ptr = new CPPSocket(fd);
-		m_buf        = new char[MAX_BUFF_LEN];
-	}
-
-	~SocketInfo()
-	{
-	    delete m_socket_ptr;
-		delete m_buf;
-	}
-
-	void ReceiveData()
-	{
-	    int recv_ln = 0;
-	    while (true)
-    	{
-		    m_socket_ptr->hasData(-1);
-			recv_ln = m_socket_ptr->recv(m_buf + offset, MAX_BUFF_LEN - offset, 0);
-
-			offset += recv_ln;
-            //printf("offset %lu, recv_ln %d \n", offset, recv_ln);
-			if (0 == recv_ln || offset == MAX_BUFF_LEN)
-			{
-				m_socket_ptr->close();
-				break;
-			}
-    	}
-		return;
-	}
-
-    size_t GetBuff(char **buf_ptr_ptr)
-	{
-	    *buf_ptr_ptr = m_buf;
-		return offset;
-	}
-private:
-	CPPSocket *m_socket_ptr;
-    char      *m_buf;
-	size_t     offset;
-};
-
-void Handler(int fd)
-{
-	SocketInfo *info = new SocketInfo(fd);
-	info->ReceiveData();
-	delete info;
-}
+SocketInfo g_Server(TCP_PORT);
 
 int main(int agrs, char *argv[])
 {
-    CPPTcpServerSocket server;
-	server.listen(18080, 1);
-	char *buff;
+    std::string sid_head = "0123456789-";
+    std::string sid      = sid_head;
+    std::string command  = "ffmpeg -i Audio/test.mp3 -f wav tcp://127.0.0.1:";
+    command += int2str(TCP_PORT);
 
-    while (true)
-	{
-		int fd = server.accept(-1);
-		SocketInfo info(fd);
-		info.ReceiveData();
-		printf("%lu\n", info.GetBuff(&buff));
-		//std::thread thrd(std::bind(Handler, fd));
-		//thrd.detach();
-	}
-	
+    std::cout << command.c_str() << std::endl;
+
+    for (int i = 0; i < 10; i++)
+    {
+        sid += int2str(i);
+        g_Server.InsertOneTask(sid, command);
+    }
+
+    sleep(10);
+    sid        = sid_head;
+    char  *buf = new char[MAX_BUFF_LEN];
+    size_t len = 0;
+
+    for (int i = 0; i < 10; i++)
+    {
+        sid += int2str(i);
+        while ( !(len = g_Server.GetBuff(sid, buf, MAX_BUFF_LEN)) )
+        {
+            usleep(10);
+        }
+        printf("len = %lu \n", len);
+    }
+
+    sleep(100000);
     return 0;
 }
 
