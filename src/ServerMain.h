@@ -23,7 +23,7 @@
 #define MAX_BUFF_LEN       (100 * 1024 * 1024)
 #endif
 #include "Tit_Map.h"
-#include "Tit_BiffLink.h"
+#include "Tit_BuffLink.h"
 #include "Tit_TaskInfo.h"
 #include "Tit_SocketInfo.h"
 

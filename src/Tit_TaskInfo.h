@@ -1,10 +1,16 @@
 #ifndef _TIT_TASK_INFO_H_
 #define _TIT_TASK_INFO_H_
+#include <string>
 
 class TaskInfo
 {
 public:
-    TaskInfo(std::string& command, size_t bufflen = MAX_BUFF_LEN) :
+    TaskInfo(std::string& command
+#ifdef _NODE_LINK_
+#else
+        , size_t bufflen = MAX_BUFF_LEN
+#endif
+        ) :
 #ifdef _NODE_LINK_
 #else
         m_buff_len(bufflen),
@@ -44,7 +50,6 @@ public:
         return m_command;
     }
 
-//private:
 #ifdef _NODE_LINK_
     BuffLink       m_buff_link;
 #else

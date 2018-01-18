@@ -1,5 +1,8 @@
 #ifndef _TIT_SOCKET_INFO_H_
 #define _TIT_SOCKET_INFO_H_
+#include <string>
+#include <thread>
+#include <functional>
 
 class SocketInfo
 {
@@ -45,8 +48,12 @@ public:
 
     void InsertOneTask(std::string &sessionId, std::string &command)
     {
-        TaskInfo *tmp = new TaskInfo(command, m_buf_len);
-
+        TaskInfo *tmp = new TaskInfo(command
+#ifdef _NODE_LINK_
+#else
+                                     , m_buf_len
+#endif
+                                     );
         m_task_map.insert(std::make_pair(sessionId, tmp));
 
         InsertTask(sessionId);
