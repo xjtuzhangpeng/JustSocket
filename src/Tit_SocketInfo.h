@@ -6,13 +6,21 @@
 #include <mutex>
 #include <functional>
 
+#include "CPPTcpSocket.h"
+#include "CPPUdpSocket.h"
+
 #include "Tit_Map.h"
 #include "Tit_TaskInfo.h"
 
 class SocketInfo
 {
 public:
-    SocketInfo(short port, size_t buf_len = MAX_BUFF_LEN) : m_buf_len(buf_len);
+    SocketInfo(short port
+#ifdef _NODE_LINK_
+#else
+               , size_t buf_len = MAX_BUFF_LEN
+#endif
+               );
 	~SocketInfo();
 
     size_t GetBuff(std::string sessionId, char *buf, size_t buff_len);
@@ -32,11 +40,14 @@ private:
     void InsertTask(std::string& sessionId);
     void ThreadDetach(std::string command);
 
+#ifdef _NODE_LINK_
+#else
     size_t                    m_buf_len;
+#endif
     CPPSocket                *m_socket;
-    std::mutex                m_mutex;
-    std::string               m_sessionId;
 
+	std::mutex                m_mutex;
+    std::string               m_sessionId;
     std::mutex                m_task_mutex;
     std::queue<std::string>   m_task_sessionId;
 

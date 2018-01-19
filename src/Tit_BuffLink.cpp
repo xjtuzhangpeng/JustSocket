@@ -1,5 +1,5 @@
 #include "Tit_BuffLink.h"
-
+#ifdef  _NODE_LINK_
 BuffLink::BuffLink()
 {
     link = new BuffNode();
@@ -85,3 +85,4 @@ size_t BuffLink::CopyBuff(char *buf, size_t buf_len)
 
     return len;
 }
+#endif

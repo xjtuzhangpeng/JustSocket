@@ -1,6 +1,15 @@
 #include "Tit_SocketInfo.h"
 
-SocketInfo::SocketInfo(short port, size_t buf_len = MAX_BUFF_LEN) : m_buf_len(buf_len)
+SocketInfo::SocketInfo(short port
+#ifdef _NODE_LINK_
+#else
+                       , size_t buf_len
+#endif
+)
+#ifdef _NODE_LINK_
+#else
+                       : m_buf_len(buf_len)
+#endif
 {
     std::thread thrd_server(std::bind(&SocketInfo::StartServer, this, port));
     thrd_server.detach();
@@ -123,14 +132,14 @@ void SocketInfo::ReceiveData()
 
     if (last_task.empty())
     {
-        printf ("task: %s \n", last_task.c_str());
+        printf ("Error: task: %s \n", last_task.c_str());
         return;
     }
 
     TaskInfo *task = m_task_map[last_task];
     if (m_socket == NULL || task == NULL)
     {
-        printf ("m_socket, task: %p , %p, %s \n", m_socket, task, last_task.c_str());
+        printf ("Error: m_socket, task: %p , %p, %s \n", m_socket, task, last_task.c_str());
         return;
     }
 
@@ -148,10 +157,10 @@ void SocketInfo::ReceiveData()
         recv_ln = m_socket->recv(buf, buf_len, 0);
 #ifdef _NODE_LINK_
         node->offset   += recv_ln;
-        printf("m_offset %lu, recv_ln %d \n", node->offset, recv_ln);
+        //printf("m_offset %lu, recv_ln %d \n", node->offset, recv_ln);
 #else
         task->m_offset += recv_ln;
-        printf("m_offset %lu, recv_ln %d \n", task->m_offset, recv_ln);
+        //printf("m_offset %lu, recv_ln %d \n", task->m_offset, recv_ln);
 #endif
         if (recv_ln <= 0
 #ifdef _NODE_LINK_

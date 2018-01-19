@@ -4,6 +4,11 @@
 #include <mutex>
 
 #include "Tit_BuffLink.h"
+#ifdef  _NODE_LINK_
+#define MAX_BUFF_LEN       (1 * 1024 * 1024)
+#else
+#define MAX_BUFF_LEN       (100 * 1024 * 1024)
+#endif
 
 class TaskInfo
 {

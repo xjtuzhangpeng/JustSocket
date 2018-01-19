@@ -1,11 +1,9 @@
-#ifndef _TIT_TASK_INFO_H_
-#define _TIT_TASK_INFO_H_
 #include "Tit_TaskInfo.h"
 
 TaskInfo::TaskInfo(std::string& command
 #ifdef _NODE_LINK_
 #else
-                   , size_t bufflen = MAX_BUFF_LEN
+                   , size_t bufflen
 #endif
                    ) :
 #ifdef _NODE_LINK_
