@@ -28,6 +28,7 @@ public:
 	~SocketInfo();
 
     size_t GetBuff(std::string sessionId, char *buf, size_t buff_len);
+    size_t GetBuffLen(std::string &sessionId);
     void   InsertOneTask(std::string &sessionId, std::string &command);
 
 private:

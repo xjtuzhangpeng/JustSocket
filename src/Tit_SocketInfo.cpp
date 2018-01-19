@@ -22,6 +22,28 @@ SocketInfo::~SocketInfo()
 {
 }
 
+size_t SocketInfo::GetBuffLen(std::string &sessionId)
+{
+    size_t    len  = -1;
+    TaskInfo *task = m_task_map[sessionId];
+
+    if (task == NULL)
+    {
+        return len;
+    }
+
+    if (task->IsSocketClosed())
+    {
+#ifdef _NODE_LINK_
+        len = task->m_buff_link.BuffLen();
+#else
+        len = task->m_offset;
+#endif
+    }
+
+    return len;
+}
+
 size_t SocketInfo::GetBuff(std::string sessionId, char *buf, size_t buff_len)
 {
     size_t    len  = 0;

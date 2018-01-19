@@ -2,7 +2,6 @@
 
 #define TCP_PORT          (18080)
 #define MAX_CONNECTED     (1)
-#define MY_MAX_BUFF_LEN   (300 * 1024 * 1024)
 
 #define MAX_TEST_NUM      (100)
 #define AUDIO_NAME        "../Audio/test.mp3"
@@ -25,26 +24,36 @@ int main(int agrs, char *argv[])
         g_Server.InsertOneTask(sid, command);
     }
 
-    sid        = sid_head;
-    char  *buf = new char[MY_MAX_BUFF_LEN];
     size_t len = 0;
-
+    sid = sid_head;
     for (int i = 0; i < MAX_TEST_NUM; i++)
     {
         sid = sid_head + int2str(i);
-        while ( !(len = g_Server.GetBuff(sid, buf, MY_MAX_BUFF_LEN)) )
+        while ( static_cast<long>(len = g_Server.GetBuffLen(sid)) < 0 )
         {
             usleep(WAIT_TASK_OR_RESULT);
         }
-        printf("len = %lu \n", len);
+        char *buf = new char[len + 10];
+
+        if (len != g_Server.GetBuff(sid, buf, len + 10))
+        {
+            printf("ERROR: len = %lu \n", len);
+        }
+        else
+        {
+            printf("NORMAL: len = %lu \n", len);
+        }
+
         //sid = AUDIO_NAME "-" + sid;
         //FILE *fp = fopen(sid.c_str(), "w+");
         //fwrite(buf, len, 1, fp);
         //fclose(fp);
+
+        delete[] buf;
+        buf = NULL;
     }
 
     sleep(1000);
-
     return 0;
 }
 
