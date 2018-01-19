@@ -7,3 +7,4 @@ Start ...
 09:25:15:734052949
 09:25:55:430865896
 3. write to UDP socket
+1152Bytes per packet

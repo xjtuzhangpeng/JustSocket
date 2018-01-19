@@ -1,4 +1,5 @@
 #include "Tit_BuffLink.h"
+
 #ifdef  _NODE_LINK_
 BuffLink::BuffLink()
 {

@@ -5,14 +5,16 @@
 #define MY_MAX_BUFF_LEN   (300 * 1024 * 1024)
 
 #define MAX_TEST_NUM      (100)
+//#define AUDIO_NAME        "../Audio/test.mp3"
+#define AUDIO_NAME        "../Audio/mp3/44100/4410016bit_128kbps.mp3"
 
 SocketInfo g_Server(TCP_PORT);
 
 int main(int agrs, char *argv[])
 {
-    std::string sid_head = "0123456789-";
+    std::string sid_head = "Test-";
     std::string sid      = sid_head;
-    std::string command  = "ffmpeg -i Audio/test.mp3 -f wav tcp://127.0.0.1:";
+    std::string command  = "ffmpeg -i " AUDIO_NAME " -f wav tcp://127.0.0.1:";
     command += int2str(TCP_PORT);
 
     std::cout << command.c_str() << std::endl;
@@ -35,6 +37,10 @@ int main(int agrs, char *argv[])
             usleep(10);
         }
         printf("len = %lu \n", len);
+        //sid = AUDIO_NAME "-" + sid;
+        //FILE *fp = fopen(sid.c_str(), "w+");
+        //fwrite(buf, len, 1, fp);
+        //fclose(fp);
     }
 
     return 0;

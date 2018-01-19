@@ -89,7 +89,16 @@ bool CPPTcpServerSocket::listen(short port, int maxConnections){
     int on=1;
     if (!setSocketOption(SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on), false))
         return false;
-
+#if 0
+    // 接收缓冲区
+    int nRecvBuf = 10 * 1024 * 1024;
+    // 设置为 10M
+    setSocketOption(SOL_SOCKET, SO_RCVBUF, &nRecvBuf, sizeof(nRecvBuf), false);
+    // 发送缓冲区
+    int nSendBuf = 10 * 1024 * 1024;
+    // 设置为 10M
+    setSocketOption(SOL_SOCKET, SO_SNDBUF, &nSendBuf, sizeof(nSendBuf), false);
+#endif
     // Bind socket to local address
     if(::bind(m_sock, (struct sockaddr *)&local, sizeof(struct sockaddr_in))==-1) {
         return false;
