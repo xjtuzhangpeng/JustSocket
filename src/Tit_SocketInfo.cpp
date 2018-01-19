@@ -5,7 +5,7 @@ SocketInfo::SocketInfo(short port
 #else
                        , size_t buf_len
 #endif
-)
+                       )
 #ifdef _NODE_LINK_
 #else
                        : m_buf_len(buf_len)
