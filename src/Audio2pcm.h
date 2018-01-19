@@ -1,6 +1,5 @@
 #ifndef _AUDIO_2_PCM_H_
 #define _AUDIO_2_PCM_H_
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -9,8 +8,18 @@
 #include <iostream>
 #include <vector>
 
-
 using namespace std;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern int main_sox(int argc, char* argv[]);
+extern int main_ffmpeg(int argc, char* argv[]);
+
+#ifdef __cplusplus
+}
+#endif
 
 
 //支持的语种格式
@@ -62,8 +71,11 @@ typedef struct DecodePara
 class Audio2Pcm
 {
 public:
+    Audio2Pcm();
+    ~Audio2Pcm();
     //将语音转码为8k_16bit_pcm格式
     bool audio2pcm(DecodePara *para);
+    void CallCodecFunction(string &cmd);
 
     //单声道转码后语音名称：outPath/inWavBaseName.wav,
     //双声道转为左右单声道语音，分别为：outPath/inWavBaseName_left.wav和outPath/inWavBaseName_right.wav,
@@ -81,20 +93,8 @@ private:
     void HandleVoiceType_mp3_or_8k();
     void HandleVoiceType_raw();
     void HandleVoiceType_ffmpeg_8kbps();
-    void CallCodecFunction(string &cmd);
 private:
 	DecodePara	*decodePara;
 };
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-extern int main_sox(int argc, char* argv[]);
-extern int main_ffmpeg(int argc, char* argv[]);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

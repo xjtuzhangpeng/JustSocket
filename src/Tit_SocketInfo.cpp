@@ -59,6 +59,7 @@ void SocketInfo::InsertOneTask(std::string &sessionId, std::string &command)
     m_task_map.insert(std::make_pair(sessionId, tmp));
 
     InsertTask(sessionId);
+    m_wait_cv.notify_one(); // notify handle a new task;
     return;
 }
 
@@ -102,7 +103,8 @@ bool SocketInfo::StartSendTask()
         }
         else
         {
-            usleep(10);
+            printf("WARN: StartSendTask, get: %s, now: %s \n",
+                    session_tmp.c_str(), session_now.c_str());
             continue;
         }
         tmp = NULL;
@@ -175,7 +177,7 @@ void SocketInfo::ReceiveData()
 #endif
             task->SetSocketClosed(true);
             m_socket->close();
-            PopTask(); // delete the last task;
+            PopTask();              // delete the last task;
             break;
         }
     }
@@ -187,7 +189,6 @@ std::string SocketInfo::GetTask()
     // 等待任务
     while (IsEmpty())
     {
-        usleep(10);
         continue;
     }
     return FrontTask();
@@ -195,6 +196,10 @@ std::string SocketInfo::GetTask()
 
 bool SocketInfo::IsEmpty()
 {
+    std::mutex                   wait_mutex;
+    std::unique_lock<std::mutex> wait_lock(wait_mutex);
+    m_wait_cv.wait(wait_lock); // wait for a new task;
+
     std::lock_guard<std::mutex> lock(m_task_mutex);
     return m_task_sessionId.empty();
 }
@@ -209,8 +214,8 @@ void SocketInfo::PopTask()
 {
     std::lock_guard<std::mutex> lock(m_task_mutex);
     printf("Task %s done. \n", m_task_sessionId.front().c_str());
-    SetLastTask("");
     m_task_sessionId.pop();
+    m_wait_cv.notify_one(); // notify handle a new task;
 }
 
 void SocketInfo::InsertTask(std::string& sessionId)
@@ -223,5 +228,6 @@ void SocketInfo::ThreadDetach(std::string command)
 {
     // send task ... 
     system(command.c_str());
+    //m_Audio2Pcm.CallCodecFunction(command);
 }
 

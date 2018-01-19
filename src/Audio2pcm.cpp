@@ -555,6 +555,7 @@ void Audio2Pcm::CallCodecFunction(string &cmd)
     std::vector<std::string> vct;
     SplitString(cmd, vct, " ");
 
+    cout << "Command: "<< cmd << endl;
     int   argc = vct.size();
     char  *argv[argc];
 
@@ -571,16 +572,18 @@ void Audio2Pcm::CallCodecFunction(string &cmd)
     }
     else if ("ffmpeg" == vct[0])
     {
+        cout << "ffmpeg --- " << endl;
         main_ffmpeg(vct.size(), argv);
     }
     else
     {
         cout << "Don't support the CMD: " << vct[0] << endl;
     }
-
+	
+    cout << "ffmpeg finish--- " << endl;
     for(int i = 0; i < argc; i++)
     {
-        delete argv[i];
+        //delete argv[i];
         argv[i] = NULL;
     } 
 }
@@ -693,6 +696,13 @@ bool Audio2Pcm::audio2pcm(DecodePara *para)
 	return true;
 }
 
+Audio2Pcm::Audio2Pcm()
+{
+}
+
+Audio2Pcm::~Audio2Pcm()
+{
+}
 
 
 /*************************************************************************

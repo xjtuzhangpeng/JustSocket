@@ -5,8 +5,8 @@
 #define MY_MAX_BUFF_LEN   (300 * 1024 * 1024)
 
 #define MAX_TEST_NUM      (100)
-//#define AUDIO_NAME        "../Audio/test.mp3"
-#define AUDIO_NAME        "../Audio/mp3/44100/4410016bit_128kbps.mp3"
+#define AUDIO_NAME        "../Audio/test.mp3"
+//#define AUDIO_NAME        "../Audio/mp3/44100/4410016bit_128kbps.mp3"
 
 SocketInfo g_Server(TCP_PORT);
 
@@ -34,7 +34,7 @@ int main(int agrs, char *argv[])
         sid = sid_head + int2str(i);
         while ( !(len = g_Server.GetBuff(sid, buf, MY_MAX_BUFF_LEN)) )
         {
-            usleep(10);
+            usleep(WAIT_TASK_OR_RESULT);
         }
         printf("len = %lu \n", len);
         //sid = AUDIO_NAME "-" + sid;
@@ -42,6 +42,8 @@ int main(int agrs, char *argv[])
         //fwrite(buf, len, 1, fp);
         //fclose(fp);
     }
+
+    sleep(1000);
 
     return 0;
 }

@@ -8,13 +8,13 @@ LINKING  = $(CC) $(CFLAGS) $(LIBS) -o $@ $^
 INCLUDES = -I. -I../include
 
 DEFS     = 
-LIBS     = -L../lib
+LIBS     = -L../lib -lffmpegsox -lavformat -lavcodec -lavutil -L~/local/sox/lib -lsox
 CFLAGS   = $(CFLAGS1) $(DEFS) $(INCLUDES)
 
 # here list all the source files
 SOURCES  = CPPSocket.cpp CPPTcpSocket.cpp CPPUdpSocket.cpp \
            Tit_BuffLink.cpp Tit_Map.cpp Tit_SocketInfo.cpp \
-           Tit_TaskInfo.cpp ServerMain.cpp
+           Tit_TaskInfo.cpp Audio2pcm.cpp ServerMain.cpp
 CSOURCES = 
 
 OBJECT   = $(SOURCES:%.cpp=%.o) 

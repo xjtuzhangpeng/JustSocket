@@ -5,12 +5,16 @@
 #include <thread>
 #include <mutex>
 #include <functional>
+#include <condition_variable>
 
 #include "CPPTcpSocket.h"
 #include "CPPUdpSocket.h"
 
 #include "Tit_Map.h"
 #include "Tit_TaskInfo.h"
+#include "Audio2pcm.h"
+
+#define WAIT_TASK_OR_RESULT  1000   // us
 
 class SocketInfo
 {
@@ -48,10 +52,13 @@ private:
 
 	std::mutex                m_mutex;
     std::string               m_sessionId;
+
+    std::condition_variable   m_wait_cv;
     std::mutex                m_task_mutex;
     std::queue<std::string>   m_task_sessionId;
 
     TIT_Map<TaskInfo *>       m_task_map;
+    Audio2Pcm                 m_Audio2Pcm;
 };
 
 #endif
