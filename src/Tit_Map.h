@@ -1,5 +1,8 @@
 #ifndef _TIT_MAP_H_
 #define _TIT_MAP_H_
+#include <string>
+#include <map>
+#include <mutex>
 
 template <typename T>
 class TIT_Map{

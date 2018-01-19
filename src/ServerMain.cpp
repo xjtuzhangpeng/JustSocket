@@ -1,8 +1,10 @@
 #include "ServerMain.h"
 
 #define TCP_PORT          (18080)
-#define MAX_CONNECTED     (20)
+#define MAX_CONNECTED     (1)
 #define MY_MAX_BUFF_LEN   (300 * 1024 * 1024)
+
+#define MAX_TEST_NUM      (100)
 
 SocketInfo g_Server(TCP_PORT);
 
@@ -15,20 +17,19 @@ int main(int agrs, char *argv[])
 
     std::cout << command.c_str() << std::endl;
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < MAX_TEST_NUM; i++)
     {
-        sid += int2str(i);
+        sid = sid_head + int2str(i);
         g_Server.InsertOneTask(sid, command);
     }
 
-    sleep(10);
     sid        = sid_head;
     char  *buf = new char[MY_MAX_BUFF_LEN];
     size_t len = 0;
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < MAX_TEST_NUM; i++)
     {
-        sid += int2str(i);
+        sid = sid_head + int2str(i);
         while ( !(len = g_Server.GetBuff(sid, buf, MY_MAX_BUFF_LEN)) )
         {
             usleep(10);
@@ -36,7 +37,6 @@ int main(int agrs, char *argv[])
         printf("len = %lu \n", len);
     }
 
-    sleep(100000);
     return 0;
 }
 
