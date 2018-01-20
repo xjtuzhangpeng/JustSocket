@@ -562,6 +562,7 @@ void Audio2Pcm::CallCodecFunction(string &cmd)
     for(int i = 0; i < argc; i++)
     {
         argv[i] = new char[vct[i].length() + 1];
+        printf("vct[%d] %s \n", i, vct[i].c_str());
         memcpy(argv[i], vct[i].c_str(), vct[i].length());
         argv[i][vct[i].length()] = 0;
     }
@@ -572,8 +573,9 @@ void Audio2Pcm::CallCodecFunction(string &cmd)
     }
     else if ("ffmpeg" == vct[0])
     {
-        cout << "ffmpeg --- " << endl;
+        cout << "1. ffmpeg --- " << endl;
         main_ffmpeg(vct.size(), argv);
+        cout << "2. ffmpeg --- " << endl;
     }
     else
     {
