@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <memory.h>
 
+#include "Tit_Logger.h"
+
 #define _NODE_LINK_
 
 #ifdef  _NODE_LINK_

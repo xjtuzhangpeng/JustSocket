@@ -8,7 +8,7 @@ LINKING  = $(CC) $(CFLAGS) $(LIBS) -o $@ $^
 INCLUDES = -I. -I../include
 
 DEFS     = 
-LIBS     = -L../lib -lffmpegsox -lavformat -lavcodec -lavutil -L~/local/sox/lib -lsox
+LIBS     = -L../lib -lffmpegsox -lavformat -lavcodec -lavutil -lsox -llog4cplus
 CFLAGS   = $(CFLAGS1) $(DEFS) $(INCLUDES)
 
 # here list all the source files

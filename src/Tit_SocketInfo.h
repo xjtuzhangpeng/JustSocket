@@ -25,7 +25,7 @@ public:
                , size_t buf_len = MAX_BUFF_LEN
 #endif
                );
-	~SocketInfo();
+    ~SocketInfo();
 
     size_t GetBuff(std::string sessionId, char *buf, size_t buff_len);
     size_t GetBuffLen(std::string &sessionId);
@@ -33,7 +33,7 @@ public:
 
 private:
     void        StartServer(short port);
-    bool        StartSendTask();
+    void        StartSendTask();
     void        SetLastTask(std::string sessionId);
     std::string GetLastTask();
     void        ReceiveData();
@@ -51,9 +51,10 @@ private:
 #endif
     CPPSocket                *m_socket;
 
-	std::mutex                m_mutex;
+    std::mutex                m_mutex;
     std::string               m_sessionId;
 
+    std::mutex                m_wait_mutex;
     std::condition_variable   m_wait_cv;
     std::mutex                m_task_mutex;
     std::queue<std::string>   m_task_sessionId;

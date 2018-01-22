@@ -8,6 +8,8 @@
 #include <iostream>
 #include <vector>
 
+#include "Tit_Logger.h"
+
 using namespace std;
 
 #ifdef __cplusplus

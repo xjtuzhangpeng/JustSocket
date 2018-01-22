@@ -562,7 +562,7 @@ void Audio2Pcm::CallCodecFunction(string &cmd)
     for(int i = 0; i < argc; i++)
     {
         argv[i] = new char[vct[i].length() + 1];
-        printf("vct[%d] %s \n", i, vct[i].c_str());
+        LOG_PRINT_WARN("vct[%d] %s", i, vct[i].c_str());
         memcpy(argv[i], vct[i].c_str(), vct[i].length());
         argv[i][vct[i].length()] = 0;
     }
@@ -573,16 +573,16 @@ void Audio2Pcm::CallCodecFunction(string &cmd)
     }
     else if ("ffmpeg" == vct[0])
     {
-        cout << "1. ffmpeg --- " << endl;
+        LOG_PRINT_WARN("1. ffmpeg --- ");
         main_ffmpeg(vct.size(), argv);
-        cout << "2. ffmpeg --- " << endl;
+        LOG_PRINT_WARN("2. ffmpeg --- ");
     }
     else
     {
-        cout << "Don't support the CMD: " << vct[0] << endl;
+        LOG_PRINT_WARN("Don't support the CMD: %s", vct[0].c_str());
     }
 	
-    cout << "ffmpeg finish--- " << endl;
+    LOG_PRINT_WARN("ffmpeg finish--- ");
     for(int i = 0; i < argc; i++)
     {
         //delete argv[i];
@@ -655,13 +655,13 @@ bool Audio2Pcm::audio2pcm(DecodePara *para)
 	{
 		if(!access(outWavName.c_str(),0))
 		{
-			//printf("%s exits \n",outWavName.c_str());
+			//LOG_PRINT_WARN("%s exits ",outWavName.c_str());
 			return true;
 		}
 		else
 		{
-			printf("Warning: transcode %s fail......\n",inWavName.c_str());	
-			//TOOLS_LOG_WARN("transcode %s fail......\n", inWavName.c_str());	
+			LOG_PRINT_WARN("Warning: transcode %s fail......",inWavName.c_str());	
+			//TOOLS_LOG_WARN("transcode %s fail......", inWavName.c_str());	
 			return false;
 		}
 	}
@@ -671,7 +671,7 @@ bool Audio2Pcm::audio2pcm(DecodePara *para)
 		{
 			if(!access(outWavName.c_str(),0))
 			{
-				//printf("%s exits \n",outWavName.c_str());
+				//LOG_PRINT_WARN("%s exits ",outWavName.c_str());
 				return true;
 			}
 			else
