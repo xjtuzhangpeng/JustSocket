@@ -21,11 +21,13 @@ public:
     BuffNode() : offset(0), next(NULL)
     {
         buff = new char[BUFF_NODE_LEN];
+        LOG_PRINT_INFO("new one buff buff:%p", buff);
     }
 
     ~BuffNode()
     {
         delete buff;
+        LOG_PRINT_INFO("delete one buff offset:%d, buff:%p", offset, buff);
         buff = NULL;
     }
 };
@@ -43,7 +45,6 @@ public:
 private:
     void Add();
 
-    BuffNode     *link;
     BuffNode     *head;
     BuffNode     *tail;
 };

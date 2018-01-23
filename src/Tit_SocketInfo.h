@@ -14,7 +14,9 @@
 #include "Tit_TaskInfo.h"
 #include "Audio2pcm.h"
 
-#define WAIT_TASK_OR_RESULT  1000   // us
+#define WAIT_TASK_OR_RESULT     1000   // us
+#define MAX_NUM_OF_THREAD       10
+#define MAX_NUM_OF_CONNECT      (MAX_NUM_OF_THREAD * 2)
 
 class SocketInfo
 {
@@ -36,12 +38,14 @@ private:
     void        StartSendTask();
     void        SetLastTask(std::string sessionId);
     std::string GetLastTask();
-    void        ReceiveData();
+    void        ReceiveData(int fd, std::string last_task);
     std::string GetTask();
     bool        IsEmpty();
     std::string FrontTask();
+    void        PlusWorkThread();
+    void        MinusWorkThread();
+    size_t      GetWorkThreadNum();
 
-    void PopTask();
     void InsertTask(std::string& sessionId);
     void ThreadDetach(std::string command);
 
@@ -49,18 +53,22 @@ private:
 #else
     size_t                    m_buf_len;
 #endif
-    CPPSocket                *m_socket;
-
     std::mutex                m_mutex;
     std::string               m_sessionId;
 
-    std::mutex                m_wait_mutex;
-    std::condition_variable   m_wait_cv;
+    std::mutex                m_tasknum_mutex;
+    std::condition_variable   m_tasknum_cv;        // 同步: 线程数阈值与socket接收数据结束
+    std::mutex                m_socket_mutex;
+    std::condition_variable   m_socket_cv;         // 同步: 开始转码与socket连接成功
+
     std::mutex                m_task_mutex;
     std::queue<std::string>   m_task_sessionId;
 
     TIT_Map<TaskInfo *>       m_task_map;
     Audio2Pcm                 m_Audio2Pcm;
+
+    std::mutex                m_thread_mutex;
+    size_t                    m_thread_num;
 };
 
 #endif

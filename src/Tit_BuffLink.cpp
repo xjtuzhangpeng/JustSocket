@@ -3,8 +3,7 @@
 #ifdef  _NODE_LINK_
 BuffLink::BuffLink()
 {
-    link = new BuffNode();
-    tail = head = link;
+    tail = head = NULL;
 }
 
 BuffLink::~BuffLink()
@@ -20,6 +19,8 @@ BuffLink::~BuffLink()
         to_delate = tmp;
         tmp       = tmp->next;
 
+        LOG_PRINT_INFO("delete one buff to_delate:%p", to_delate);
+
         delete to_delate;
         to_delate = NULL;
     }
@@ -28,13 +29,21 @@ BuffLink::~BuffLink()
 void BuffLink::Add()
 {
     BuffNode *tmp = new BuffNode();
-    tail->next = tmp;
-    tail       = tmp;
+    LOG_PRINT_INFO("new one buff link:%p", tmp);
+    if (tail == NULL)
+    {
+        tail = head = tmp;
+    }
+    else
+    {
+        tail->next = tmp;
+        tail       = tmp;
+    }
 }
 
 BuffNode * BuffLink::GetTail()
 {
-    if (tail->offset == BUFF_NODE_LEN)
+    if (NULL == tail || BUFF_NODE_LEN == tail->offset)
     {
         Add();
     }

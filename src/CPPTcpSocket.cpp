@@ -86,9 +86,9 @@ bool CPPTcpServerSocket::listen(short port, int maxConnections){
     if (!open())
         return false;
 
-    int on=1;
-    if (!setSocketOption(SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on), false))
-        return false;
+    //int on=1;
+    //if (!setSocketOption(SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on), false))
+        //return false;
 #if 0
     // 接收缓冲区
     int nRecvBuf = 10 * 1024 * 1024;
