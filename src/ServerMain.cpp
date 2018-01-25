@@ -72,14 +72,14 @@ void task_thread(std::string sid_head, int j)
     }
 }
 
-int main(int agrs, char *argv[])
+void test_ffmepg()
 {
     std::string sid_head = "Test-";
 
     LOG_PRINT_FATAL("main start ... ");
 
-    std::thread thrd_0(std::bind(task_thread, sid_head, 0));
-    /*std::thread thrd_1(std::bind(task_thread, sid_head, 1));
+    /*std::thread thrd_0(std::bind(task_thread, sid_head, 0));
+    std::thread thrd_1(std::bind(task_thread, sid_head, 1));
     std::thread thrd_2(std::bind(task_thread, sid_head, 2));
     std::thread thrd_3(std::bind(task_thread, sid_head, 3));
     std::thread thrd_4(std::bind(task_thread, sid_head, 4));
@@ -89,8 +89,8 @@ int main(int agrs, char *argv[])
     std::thread thrd_8(std::bind(task_thread, sid_head, 8));
     std::thread thrd_9(std::bind(task_thread, sid_head, 9));*/
 
-    thrd_0.join();
-    /*thrd_1.join();
+    /*thrd_0.join();
+    thrd_1.join();
     thrd_2.join();
     thrd_3.join();
     thrd_4.join();
@@ -101,6 +101,14 @@ int main(int agrs, char *argv[])
     thrd_9.join();*/
     LOG_PRINT_FATAL("main finish ... ");
 
+}
+
+int main(int agrs, char *argv[])
+{
+    std::string  sox_cmd = "sox --i";
+    Audio2Pcm audio;
+    audio.CallCodecFunction(sox_cmd);
+    
     return 0;
 }
 

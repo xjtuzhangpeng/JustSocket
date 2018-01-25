@@ -552,24 +552,27 @@ void Audio2Pcm::HandleVoiceType_ffmpeg_8kbps()
 
 void Audio2Pcm::CallCodecFunction(string &cmd)
 {
+    LOG_PRINT_INFO("Command: %s", cmd.c_str());
+
     std::vector<std::string> vct;
     SplitString(cmd, vct, " ");
 
-    cout << "Command: "<< cmd << endl;
     int   argc = vct.size();
     char  *argv[argc];
 
     for(int i = 0; i < argc; i++)
     {
         argv[i] = new char[vct[i].length() + 1];
-        LOG_PRINT_WARN("vct[%d] %s", i, vct[i].c_str());
+        LOG_PRINT_INFO("vct[%d] %s", i, vct[i].c_str());
         memcpy(argv[i], vct[i].c_str(), vct[i].length());
         argv[i][vct[i].length()] = 0;
     }
 
     if ("sox" == vct[0])
     {
-        main_sox(vct.size(), argv);
+        LOG_PRINT_WARN("1. sox --- ");
+        SOX_main(vct.size(), argv);
+        LOG_PRINT_WARN("2. sox --- ");
     }
     else if ("ffmpeg" == vct[0])
     {
@@ -582,10 +585,10 @@ void Audio2Pcm::CallCodecFunction(string &cmd)
         LOG_PRINT_WARN("Don't support the CMD: %s", vct[0].c_str());
     }
 	
-    LOG_PRINT_WARN("ffmpeg finish--- ");
+    LOG_PRINT_WARN("CallCodecFunction finish--- ");
     for(int i = 0; i < argc; i++)
     {
-        //delete argv[i];
+        delete[] argv[i];
         argv[i] = NULL;
     } 
 }

@@ -8,6 +8,9 @@
 #include "Tit_TaskInfo.h"
 #include "Tit_SocketInfo.h"
 
+#define SOX_VOX_1(tempWavName, outWavName) \
+    "sox -e oki-adpcm -b 4 -r 6k " + tempWavName + " -b 16 -r 8000 " + outWavName + " highpass 10"
+
 static inline std::string int2str(const int &input)
 {
     std::string        output;

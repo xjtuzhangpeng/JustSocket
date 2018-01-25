@@ -2994,8 +2994,10 @@ int SOX_main(int argc, char **argv) {
 
     gettimeofday(&load_timeofday, NULL);
     myname = argv[0];
+    // sox_globals_t 输出日志 - zhangpeng
     sox_globals.output_message_handler = output_message;
 
+    // 检测调用的哪个功能 - zhangpeng
     if (0 != sox_basename(mybase, sizeof(mybase), myname)) {
         if (0 == lsx_strcasecmp(mybase, "play"))
             sox_mode = sox_play;
@@ -3005,22 +3007,23 @@ int SOX_main(int argc, char **argv) {
             sox_mode = sox_soxi;
     }
 
-    if (!sox_mode && argc > 1
-            && (!strcmp(argv[1], "--i") || !strcmp(argv[1], "--info")))
+    // (sox --i 或者 sox --info) 调用程序转向 soxi - zhangpeng
+    if ((!sox_mode && argc > 1) && 
+        (!strcmp(argv[1], "--i") || !strcmp(argv[1], "--info")))
         --argc, ++argv, sox_mode = sox_soxi;
 
-    if (sox_init() != SOX_SUCCESS)
+    if (sox_init() != SOX_SUCCESS) // 初始化sox - zhangpeng
         exit(1);
 
-    stdin_is_a_tty = isatty(fileno(stdin));
+    stdin_is_a_tty = isatty(fileno(stdin)); // 设备是否是tty设备 - zhangpeng
     errno = 0; /* Both isatty & fileno may set errno. */
 
     atexit(atexit_cleanup);
 
-    if (sox_mode == sox_soxi)
-        exit(soxi(argc, argv));
+    if (sox_mode == sox_soxi)    // soxi 退出程序 -> 改为 return - zhangpeng
+        return soxi(argc, argv); // exit(soxi(argc, argv));
 
-    parse_options_and_filenames(argc, argv);
+    parse_options_and_filenames(argc, argv); // 解析 输入的参数 - zhangpeng
 
     if (sox_globals.verbosity > 2)
         display_SoX_version (stderr);

@@ -12,7 +12,7 @@ LINKING  = $(CC) $(CFLAGS) $(LIBS) -o $@ $^
 
 # here list all the source files
 SOURCES  = $(FFMPEG_SOURCES) $(SOX_SOURCES) $(SOXR_SOURCES) \
-           Audio2pcm.cpp Tit_Logger.cpp ServerMain.cpp
+           Tit_Logger.cpp ServerMain.cpp
 
 CSOURCES = $(FFMPEG_CSOURCES) $(SOX_CSOURCES) $(SOXR_CSOURCES)
 
