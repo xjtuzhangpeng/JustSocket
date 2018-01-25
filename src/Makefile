@@ -1,4 +1,7 @@
 include Makefile.common.variables
+include ffmpeg/Makefile.in
+include sox/Makefile.in
+include soxr/Makefile.in
 #CFLAGS  = -O3 -Wall $(DEFS) $(INCLUDES)
 .PHONY : clean all dep
 %.o:%.cpp ; $(CC) -c $(CFLAGS) $< -o $@
@@ -12,10 +15,8 @@ LIBS     = -L../../lib -lffmpegsox -lavformat -lavcodec -lavutil -lsox -llog4cpl
 CFLAGS   = $(CFLAGS1) $(DEFS) $(INCLUDES)
 
 # here list all the source files
-SOURCES  = CPPSocket.cpp CPPTcpSocket.cpp CPPUdpSocket.cpp \
-           Tit_BuffLink.cpp Tit_Map.cpp Tit_SocketInfo.cpp \
-           Tit_TaskInfo.cpp Audio2pcm.cpp Tit_Logger.cpp   \
-           ServerMain.cpp
+SOURCES  = $(FFMPEG_SOURCES) $(SOX_SOURCES) $(SOXR_SOURCES) \
+           Audio2pcm.cpp Tit_Logger.cpp ServerMain.cpp
 
 CSOURCES = 
 
