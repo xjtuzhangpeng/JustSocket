@@ -5,17 +5,14 @@ include Makefile.common.variables
 %.o:%.c ;   $(CC) -c $(CFLAGS) $< -o $@
 
 LINKING  = $(CC) $(CFLAGS) $(LIBS) -o $@ $^
-INCLUDES = -I. -I../include
+INCLUDES = -I. -I../../include
 
 DEFS     = 
-LIBS     = -L../lib -lffmpegsox -lavformat -lavcodec -lavutil -lsox -llog4cplus
+LIBS     = -L../../lib -lsox -llog4cplus -l
 CFLAGS   = $(CFLAGS1) $(DEFS) $(INCLUDES)
 
 # here list all the source files
-SOURCES  = CPPSocket.cpp CPPTcpSocket.cpp CPPUdpSocket.cpp \
-           Tit_BuffLink.cpp Tit_Map.cpp Tit_SocketInfo.cpp \
-           Tit_TaskInfo.cpp Audio2pcm.cpp Tit_Logger.cpp   \
-           ServerMain.cpp
+SOURCES  = ServerMain.cpp
 
 CSOURCES = 
 
