@@ -14,10 +14,12 @@ CFLAGS   = $(CFLAGS1) $(DEFS) $(INCLUDES)
 # here list all the source files
 SOURCES  = CPPSocket.cpp CPPTcpSocket.cpp CPPUdpSocket.cpp \
            Tit_BuffLink.cpp Tit_Map.cpp Tit_SocketInfo.cpp \
-           Tit_TaskInfo.cpp Audio2pcm.cpp ServerMain.cpp
+           Tit_TaskInfo.cpp Audio2pcm.cpp Tit_Logger.cpp   \
+           ServerMain.cpp
+
 CSOURCES = 
 
-OBJECT   = $(SOURCES:%.cpp=%.o) 
+OBJECT   = $(SOURCES:%.cpp=%.o)
 OBJECT  += $(CSOURCES:%.c=%.o)
 TARGET   = Server
 # here list all the target binary files

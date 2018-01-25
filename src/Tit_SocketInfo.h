@@ -56,8 +56,10 @@ private:
     std::mutex                m_mutex;
     std::string               m_sessionId;
 
-    std::mutex                m_tasknum_mutex;
-    std::condition_variable   m_tasknum_cv;        // 同步: 线程数阈值与socket接收数据结束
+    std::mutex                m_taskbgn_mutex;
+    std::condition_variable   m_taskbgn_cv;        // 同步: 任务队列为空与接收到新的任务
+    std::mutex                m_taskend_mutex;
+    std::condition_variable   m_taskend_cv;        // 同步: 线程数阈值与socket接收数据结束
     std::mutex                m_socket_mutex;
     std::condition_variable   m_socket_cv;         // 同步: 开始转码与socket连接成功
 

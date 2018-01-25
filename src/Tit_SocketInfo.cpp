@@ -93,6 +93,7 @@ void SocketInfo::InsertOneTask(std::string &sessionId, std::string &command)
         m_task_map.insert(std::make_pair(sessionId, tmp));
         InsertTask(sessionId);
     }
+    m_taskbgn_cv.notify_one(); // wait for next task;
     return;
 }
 
@@ -118,7 +119,7 @@ void SocketInfo::ReceiveData(int fd, std::string last_task)
     TaskInfo    *task      = m_task_map[last_task];
     CPPSocket    socket(fd);
 
-    LOG_PRINT_WARN("Error: task: %p, %s", task, last_task.c_str());
+    LOG_PRINT_INFO("Task: %p, %s", task, last_task.c_str());
 
     if (last_task.empty() || task == NULL)
     {
@@ -129,9 +130,8 @@ void SocketInfo::ReceiveData(int fd, std::string last_task)
     while (true)
     {
 #ifdef _NODE_LINK_
-        struct BuffNode * node = task->m_buff_link.GetTail();
-        buf     = node->buff + node->offset;
-        buf_len = BUFF_NODE_LEN - node->offset;
+        buf     = task->m_buff_link.GetBuff();
+        buf_len = task->m_buff_link.GetTailBuffLen();
 #else
         buf     = task->m_buff + task->m_offset;
         buf_len = task->m_buff_len - task->m_offset;
@@ -150,18 +150,18 @@ void SocketInfo::ReceiveData(int fd, std::string last_task)
             break;
         }
 #ifdef _NODE_LINK_
-        node->offset   += recv_ln;
-        //LOG_PRINT_WARN("m_offset %lu, recv_ln %d", node->offset, recv_ln);
+        task->m_buff_link.UpdateBuffLen(recv_ln);
+        LOG_PRINT_INFO("Task: %s, m_offset %lu, recv_ln %d", last_task.c_str(), task->m_buff_link.GetTail()->offset, recv_ln);
 #else
         task->m_offset += recv_ln;
-        //LOG_PRINT_WARN("m_offset %lu, recv_ln %d", task->m_offset, recv_ln);
+        LOG_PRINT_INFO("Task: %s, m_offset %lu, recv_ln %d", last_task.c_str(), task->m_offset, recv_ln);
 #endif
     }
 
 RECV_END:
     socket.close();
     MinusWorkThread();
-    m_tasknum_cv.notify_one();
+    m_taskend_cv.notify_one();
     return;
 }
 
@@ -187,13 +187,13 @@ void SocketInfo::StartSendTask()
             thrd.detach();
 
             std::unique_lock<std::mutex> wait_lock(m_socket_mutex);
-            m_socket_cv.wait(wait_lock); // wait for next task;
+            m_socket_cv.wait(wait_lock); // wait for socket allready task;
         }
         else
         {
             LOG_PRINT_WARN("too many tasks %d, wait for notify ..", GetWorkThreadNum());
-            std::unique_lock<std::mutex> wait_lock(m_tasknum_mutex);
-            m_tasknum_cv.wait(wait_lock); // wait for next task;
+            std::unique_lock<std::mutex> wait_lock(m_taskend_mutex);
+            m_taskend_cv.wait(wait_lock); // wait for task finish;
             continue;
         }
     }
@@ -203,22 +203,22 @@ void SocketInfo::StartSendTask()
 void SocketInfo::ThreadDetach(std::string command)
 {
     // send task ... 
-	LOG_PRINT_WARN("Send task start ...");
+	LOG_PRINT_INFO("Send task start ...");
 #if 1
     system(command.c_str());
 #else
     m_Audio2Pcm.CallCodecFunction(command);
 #endif
-    LOG_PRINT_WARN("Send task end ...");
+    LOG_PRINT_INFO("Send task end ...");
 }
 
 std::string SocketInfo::GetTask()
 {
     // 等待任务
-    while (IsEmpty())
+    if (IsEmpty())
     {
-        usleep(10 * 1000);
-        continue;
+        std::unique_lock<std::mutex> wait_lock(m_taskbgn_mutex);
+        m_taskbgn_cv.wait(wait_lock); // wait for a new task;
     }
     return FrontTask();
 }
@@ -241,7 +241,7 @@ void SocketInfo::InsertTask(std::string& sessionId)
 {
     std::lock_guard<std::mutex> lock(m_task_mutex);
     m_task_sessionId.push(sessionId);
-    LOG_PRINT_WARN("tasknum:%lu", m_task_sessionId.size());
+    LOG_PRINT_INFO("tasknum:%lu", m_task_sessionId.size());
 }
 
 void SocketInfo::SetLastTask(std::string sessionId)

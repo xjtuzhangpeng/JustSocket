@@ -50,6 +50,30 @@ BuffNode * BuffLink::GetTail()
     return tail;
 }
 
+char * BuffLink::GetBuff()
+{
+    (void)GetTail();
+    return tail->buff + tail->offset;
+}
+
+size_t BuffLink::GetTailBuffLen()
+{
+    (void)GetTail();
+    return (BUFF_NODE_LEN - tail->offset);
+}
+
+void BuffLink::UpdateBuffLen(size_t diff)
+{
+    if (diff > (BUFF_NODE_LEN - tail->offset))
+    {
+        LOG_PRINT_WARN("the input size %lu is too long -- ", diff);
+        diff = BUFF_NODE_LEN - tail->offset;
+        LOG_PRINT_WARN(" -- cut it to %d", diff);
+    }
+    tail->offset += diff;
+    return;
+}
+
 size_t BuffLink::BuffLen()
 {
     size_t           len = 0;

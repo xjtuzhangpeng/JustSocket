@@ -15,6 +15,7 @@ class BuffNode
 {
 public:
     size_t            offset;
+    size_t            buff_len;
     char             *buff;
     BuffNode         *next;
 
@@ -41,6 +42,10 @@ public:
     size_t BuffLen();
     size_t CopyBuff(char *buf, size_t buf_len);
 
+    char  *GetBuff();
+    size_t GetTailBuffLen();
+    void   UpdateBuffLen(size_t diff);
+    
     BuffNode * GetTail();
 private:
     void Add();
