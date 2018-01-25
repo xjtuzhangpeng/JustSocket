@@ -1,5 +1,8 @@
-#ifndef _TTS_RESAMPLE_H_
-#define _TTS_RESAMPLE_H_
+#ifndef _TIT_RESAMPLE_H_
+#define _TIT_RESAMPLE_H_
+#include <iostream>
+#include <memory.h>
+
 #include <soxr-lsr.h>
 
 class TtsResample
@@ -23,4 +26,4 @@ private:
     SRC_SRCTYPE_e   m_src_type;
 };
 
-#endif//_TTS_RESAMPLE_H_
+#endif//_TIT_RESAMPLE_H_

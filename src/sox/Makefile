@@ -12,7 +12,7 @@ LIBS     = -L../../lib -lsox -llog4cplus -l
 CFLAGS   = $(CFLAGS1) $(DEFS) $(INCLUDES)
 
 # here list all the source files
-SOURCES  = ../soxr/TtsResample.cpp ServerMain.cpp
+SOURCES  = ../soxr/Tit_Resample.cpp ServerMain.cpp
 
 CSOURCES = 
 

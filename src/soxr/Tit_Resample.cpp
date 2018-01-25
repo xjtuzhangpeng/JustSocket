@@ -1,6 +1,4 @@
-#include <iostream>
-#include <memory.h>
-#include "TtsResample.h"
+#include "Tit_Resample.h"
 
 using namespace std;
 
