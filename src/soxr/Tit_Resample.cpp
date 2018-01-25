@@ -3,7 +3,7 @@
 using namespace std;
 
 TtsResample::TtsResample(double irate, double orate, SRC_SRCTYPE_e src_type)
-    : m_irate(irate), m_orate(orate), m_src_type(src_type), m_olen(0)
+    : m_irate(irate), m_orate(orate), m_olen(0), m_src_type(src_type)
 {
     memset(&m_data, 0x00, sizeof(SRC_DATA));
 }
@@ -52,7 +52,8 @@ void TtsResample::ResampleBuf(short *data_in,  size_t inSize,
     src_short_to_float_array(data_in, m_data.data_in, inSize);
 
     // 重采样 - zhangpeng
-    int  error  = src_simple(&m_data, m_src_type, 1);
+    SRC_ERROR error = src_simple(&m_data, m_src_type, 1);
+    (void)error;
     if (m_data.input_frames_used != m_data.input_frames)
     {
         cout << "WARN: the data isn't resample complete!" << endl;
@@ -60,7 +61,8 @@ void TtsResample::ResampleBuf(short *data_in,  size_t inSize,
         cout << "m_data.input_frames " << m_data.input_frames << endl;
     }
 
-    long outLen = (m_data.output_frames_gen > outSize) ? outSize : m_data.output_frames_gen;
+    long outLen = (m_data.output_frames_gen > static_cast<long> (outSize)) ? \
+                  static_cast<long> (outSize) : m_data.output_frames_gen;
 
     src_float_to_short_array(m_data.data_out, data_out, outLen);
 

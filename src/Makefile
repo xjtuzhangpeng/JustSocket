@@ -5,20 +5,20 @@ include soxr/Makefile.in
 #CFLAGS  = -O3 -Wall $(DEFS) $(INCLUDES)
 .PHONY : clean all dep
 %.o:%.cpp ; $(CC) -c $(CFLAGS) $< -o $@
-%.o:%.c ;   $(CC) -c $(CFLAGS) $< -o $@
+%.o:%.c ;   $(cc) -c $(CFLAGS) $< -o $@
 
 LINKING  = $(CC) $(CFLAGS) $(LIBS) -o $@ $^
-INCLUDES = -I. -I../../include
+INCLUDES = -I. -I../include -Iffmpeg -Isox -Isoxr
 
 DEFS     = 
-LIBS     = -L../../lib -lffmpegsox -lavformat -lavcodec -lavutil -lsox -llog4cplus
+LIBS     = -L../lib  -llog4cplus -lffmpegsox -lavformat -lavcodec -lavutil -lsox -lsoxr-lsr -lsoxr
 CFLAGS   = $(CFLAGS1) $(DEFS) $(INCLUDES)
 
 # here list all the source files
 SOURCES  = $(FFMPEG_SOURCES) $(SOX_SOURCES) $(SOXR_SOURCES) \
            Audio2pcm.cpp Tit_Logger.cpp ServerMain.cpp
 
-CSOURCES = 
+CSOURCES = $(FFMPEG_CSOURCES) $(SOX_CSOURCES) $(SOXR_CSOURCES)
 
 OBJECT   = $(SOURCES:%.cpp=%.o)
 OBJECT  += $(CSOURCES:%.c=%.o)

@@ -2,4 +2,4 @@
 SOX_DIR      = sox
 SOX_SOURCES  = 
 
-SOX_CSOURCES = 
+SOX_CSOURCES = $(SOX_DIR)/sox.c
