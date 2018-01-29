@@ -21,8 +21,8 @@ OBJECT  += $(CSOURCES:%.c=%.o)
 TARGET   = Server
 
 .PHONY : clean all dep
-%.o:%.cpp ; $(CC) -c $(CFLAGS) $< -o $@
-%.o:%.c ;   $(cc) -c $(CFLAGS) $< -o $@
+%.o:%.cpp %.h ; $(CC) -c $(CFLAGS) $< -o $@
+%.o:%.c %.h   ; $(cc) -c $(CFLAGS) $< -o $@
 
 # here list all the target binary files
 all:$(TARGET)

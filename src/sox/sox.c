@@ -3032,8 +3032,7 @@ int SOX_main(int argc, char **argv) {
 
     if (file_count) {
         sox_format_handler_t const * handler = sox_write_handler(ofile->filename, ofile->filetype, NULL);
-        is_player = handler &&
-        (handler->flags & SOX_FILE_DEVICE) && !(handler->flags & SOX_FILE_PHONY);
+        is_player = handler && (handler->flags & SOX_FILE_DEVICE) && !(handler->flags & SOX_FILE_PHONY);
     }
 
     if (combine_method == sox_default)
@@ -3055,10 +3054,10 @@ int SOX_main(int argc, char **argv) {
             usage("Comments can be given only for an output file");
     }
     if (ofile->volume != HUGE_VAL)
-    usage("-v can be given only for an input file;\n"
-    "\tuse the `gain' or `vol' effect to set the output file volume");
+        usage("-v can be given only for an input file;\n"
+              "\tuse the `gain' or `vol' effect to set the output file volume");
     if (ofile->signal.length != SOX_UNSPEC)
-    usage("--ignore-length can be given only for an input file");
+        usage("--ignore-length can be given only for an input file");
 
     signal(SIGINT, SIG_IGN); /* So child pipes aren't killed by track skip */
     for (i = 0; i < input_count; i++) {
@@ -3082,15 +3081,14 @@ int SOX_main(int argc, char **argv) {
                 f->encoding = files[1]->encoding;
             }
         }
-        files[j]->ft = sox_open_read(f->filename, &f->signal, &f->encoding,
-                f->filetype);
+        files[j]->ft = sox_open_read(f->filename, &f->signal, &f->encoding, f->filetype);
         if (!files[j]->ft)
             /* sox_open_read() will call lsx_warn for most errors.
              * Rely on that printing something. */
             exit(2);
-        if (show_progress == sox_option_default
-                && (files[j]->ft->handler.flags & SOX_FILE_DEVICE) != 0
-                && (files[j]->ft->handler.flags & SOX_FILE_PHONY) == 0)
+        if ( show_progress == sox_option_default && 
+             (files[j]->ft->handler.flags & SOX_FILE_DEVICE) != 0 && 
+             (files[j]->ft->handler.flags & SOX_FILE_PHONY) == 0)
             show_progress = sox_option_yes;
     }
 

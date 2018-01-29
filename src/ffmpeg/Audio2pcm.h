@@ -8,6 +8,7 @@
 #include <iostream>
 #include <vector>
 
+#include "common.h"
 #include "Tit_Logger.h"
 
 using namespace std;
@@ -23,41 +24,6 @@ extern int main_ffmpeg(int argc, char* argv[]);
 #ifdef __cplusplus
 }
 #endif
-
-
-//支持的语种格式
-enum VoiceType
-{
-	sum=0,
-	pcm,                 //128kbps的pcm: 8k_16bit_PCM
-	pcm_spec,            //采样率为非8k的pcm: 6k_16bit_PCM
-	vox,                 //6k_4bit的vox: 6k_4bit_Vox
-	alaw,                //带头的alaw: 8k_8bit_Alaw
-	alaw_raw,            //没头的alaw
-	acm,                 //adpcm:8k_8bit_Alaw, 8k_8bit_Ulaw, 8k_8bit_PCM, 8k_16bit_13kbps_GSM 6.10, 8k_16bit_32kbps_ima-adpcm, 8k_16bit_32kbps_ms-adpcm, 
-	voc,                 //标准的voc
-	mp3,                 //MP3语音: 44100Hz_16bit_128kbps_mp3
-	mp3_8k,              //8k_16bit_32kbps_mp3, 8k_16bit_8kbps_mp3
-	raw,                 //没头的128kbps的pcm
-	ffmpeg_8kbps,        //其他的可以用ffmpeg统一解码的压缩语音(对应徐晓艳8kbps): 8kbps,63kbps,16kbps
-};
-
-//语音声道数
-enum ChannelNum
-{
-	CHANNEL_MONO=1,	//单声道
-	CHANNEL_STEREO,		//双声道
-};
-
-//双声道语音转码方式
-enum  StereoOnMode
-{
-	STEREO_ON_0=0,		//只将两个单声道语音合并成一个分录的双声道语音，并删除原来的两个单声道语音
-	STEREO_ON_1,		//将分录的双声道语音合并成一个合录的单声道语音
-	STEREO_ON_2,		//将分录双声道的左右声道解码成两个单声道
-	STEREO_ON_3,		//将分录双声道的左右声道解码成两个单声道同时，还需合并成一个单声道
-	STEREO_ON_4			//合录双声道，左右声道内容一样，都是多个人的对话，则仅保留一个声道内容
-};
 
 //转码相关参数
 typedef struct DecodePara

@@ -1,5 +1,5 @@
 
 SOXR_DIR      = soxr
-SOXR_SOURCES  = $(SOXR_DIR)/Tit_Resample.cpp
+SOXR_SOURCES  = $(SOXR_DIR)/Tit_Resample.cpp $(SOXR_DIR)/Tit_MonoStereo.cpp
 
 SOXR_CSOURCES = 
