@@ -39,6 +39,12 @@ struct buffer_data {
     size_t size; ///< size left in the buffer
 };
 
+#define LINE_SZ 1024
+typedef char LINE_BUFF[LINE_SZ];
+
+static int         g_SessionNum = 0;
+static LINE_BUFF * g_AudioFormatInfo = NULL;
+
 static int read_packet(void *opaque, uint8_t *buf, int buf_size)
 {
     struct buffer_data *bd = (struct buffer_data *)opaque;
@@ -54,30 +60,27 @@ static int read_packet(void *opaque, uint8_t *buf, int buf_size)
     return buf_size;
 }
 
-#define LINE_SZ 1024
-typedef char LINE_BUFF[LINE_SZ];
-
-int         g_SessionNum = 0;
-LINE_BUFF * g_AudioFormatInfo = NULL;
-
-void tit_store_log(char * line, int sessionId)
+static void InitInfo(int sessionId)
 {
-    printf("sessionId %d\n", sessionId);
-    if (sessionId < 0 || sessionId >= g_SessionNum)
-    {
-        printf("Error ===== ");
-    }
-    else
+    if (sessionId >= 0 && sessionId < g_SessionNum)
     {
         memset(g_AudioFormatInfo[sessionId], 0x00, LINE_SZ);
-        memcpy(g_AudioFormatInfo[sessionId], line, strlen(line));
     }
 }
 
 int GetInfo(int sessionId)
 {
-    printf("%s \n", g_AudioFormatInfo[sessionId]);
+    LOG_PRINT(g_AudioFormatInfo[sessionId]);
     return 0;
+}
+
+void tit_store_log(char * line, int sessionId)
+{
+    printf("sessionId %d\n", sessionId);
+    if (sessionId >= 0 && sessionId < g_SessionNum)
+    {
+        memcpy(g_AudioFormatInfo[sessionId], line, strlen(line));
+    }
 }
 
 void InitSessionNum(int sessionNum)
@@ -86,9 +89,11 @@ void InitSessionNum(int sessionNum)
     if (g_AudioFormatInfo != NULL)
         free(g_AudioFormatInfo);
     g_AudioFormatInfo = malloc((sizeof(LINE_BUFF) * sessionNum));
+
+    printf("%p %p %p \n", g_AudioFormatInfo[0], g_AudioFormatInfo[1], g_AudioFormatInfo[2]);
 }
 
-int avio_reading_main(int argc, char *filename, int sessionid)
+int avio_reading_main(char *filename, int sessionid)
 {
     AVFormatContext *fmt_ctx = NULL;
     AVIOContext *avio_ctx = NULL;
@@ -98,13 +103,8 @@ int avio_reading_main(int argc, char *filename, int sessionid)
     int ret = 0;
     struct buffer_data bd = { 0 };
 
-    if (argc != 2) {
-        fprintf(stderr, "usage: %s input_file\n"
-                "API example program to show how to read from a custom buffer "
-                "accessed through AVIOContext.\n", filename);
-        return 1;
-    }
     input_filename = filename;
+    InitInfo(sessionid);
 
     /* register codecs and formats and other lavf/lavc components*/
     av_register_all();

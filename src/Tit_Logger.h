@@ -61,4 +61,6 @@ extern LOGGER G_Log;
 #endif
 #endif
 
+extern "C" void LOG_PRINT(char * line);
+
 #endif//_TIT_LOGGER_H_

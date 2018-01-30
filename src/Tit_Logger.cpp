@@ -62,3 +62,8 @@ void LOGGER::LogPrint(enum eLogLevel level, const char *txt, ...)
     }
 }
 
+extern "C" void LOG_PRINT(char * line)
+{
+    LOG_PRINT_FATAL("%s", line);
+}
+
