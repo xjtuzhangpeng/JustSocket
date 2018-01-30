@@ -32,11 +32,14 @@ size_t HanldeFfmpegResult::GetResampleResult(char *in_ptr, size_t in_len, char *
                          reinterpret_cast<short *> (oBuf),  CHAR_LEN_SHORT_LEN(oSize));
 
     // 重新赋值语音头
-    head->ByteRate   = (head->NumChannels * TBNR_INPUT_SAMPLES * head->BitsPerSample) >> 3;
-    head->BlockAlign = (head->NumChannels * head->BitsPerSample) >> 3;
-    head->SampleRate = TBNR_INPUT_SAMPLES;
-    head->ChunkSize  = oSize + PCM_HEAD_LEN;
-    head->DataLen    = oSize;
+    head->ChunkID     = 0x46464952;
+    head->NumChannels = 1;
+    head->ByteRate    = (head->NumChannels * TBNR_INPUT_SAMPLES * head->BitsPerSample) >> 3;
+    head->BlockAlign  = (head->NumChannels * head->BitsPerSample) >> 3;
+    head->SampleRate  = TBNR_INPUT_SAMPLES;
+    head->ChunkSize   = oSize + PCM_HEAD_LEN;
+    head->DataTag     = 0x61746164;
+    head->DataLen     = oSize;
     
     memcpy(tmpBuf, in_ptr, PCM_HEAD_LEN);
 

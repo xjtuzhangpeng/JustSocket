@@ -119,7 +119,7 @@ void SocketInfo::ReceiveData(int fd, std::string last_task)
     TaskInfo    *task      = m_task_map[last_task];
     CPPSocket    socket(fd);
 
-    LOG_PRINT_INFO("Task: %p, %s", task, last_task.c_str());
+    //LOG_PRINT_INFO("Task: %p, %s", task, last_task.c_str());
 
     if (last_task.empty() || task == NULL)
     {
@@ -151,10 +151,10 @@ void SocketInfo::ReceiveData(int fd, std::string last_task)
         }
 #ifdef _NODE_LINK_
         task->m_buff_link.UpdateBuffLen(recv_ln);
-        LOG_PRINT_INFO("Task: %s, m_offset %lu, recv_ln %d", last_task.c_str(), task->m_buff_link.GetTail()->offset, recv_ln);
+        //LOG_PRINT_INFO("Task: %s, m_offset %lu, recv_ln %d", last_task.c_str(), task->m_buff_link.GetTail()->offset, recv_ln);
 #else
         task->m_offset += recv_ln;
-        LOG_PRINT_INFO("Task: %s, m_offset %lu, recv_ln %d", last_task.c_str(), task->m_offset, recv_ln);
+        //LOG_PRINT_INFO("Task: %s, m_offset %lu, recv_ln %d", last_task.c_str(), task->m_offset, recv_ln);
 #endif
     }
 

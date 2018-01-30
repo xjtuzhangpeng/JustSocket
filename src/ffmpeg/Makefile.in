@@ -1,6 +1,7 @@
 
-FFMPEG_DIR     = ffmpeg
-FFMPEG_SOURCES = $(FFMPEG_DIR)/CPPSocket.cpp $(FFMPEG_DIR)/CPPTcpSocket.cpp $(FFMPEG_DIR)/CPPUdpSocket.cpp \
-                 $(FFMPEG_DIR)/Tit_BuffLink.cpp $(FFMPEG_DIR)/Tit_Map.cpp $(FFMPEG_DIR)/Tit_SocketInfo.cpp \
-                 $(FFMPEG_DIR)/Tit_TaskInfo.cpp $(FFMPEG_DIR)/Audio2pcm.cpp 
+FFMPEG_DIR      = ffmpeg
+FFMPEG_SOURCES  = $(FFMPEG_DIR)/CPPSocket.cpp $(FFMPEG_DIR)/CPPTcpSocket.cpp $(FFMPEG_DIR)/CPPUdpSocket.cpp \
+                  $(FFMPEG_DIR)/Tit_BuffLink.cpp $(FFMPEG_DIR)/Tit_Map.cpp $(FFMPEG_DIR)/Tit_SocketInfo.cpp \
+                  $(FFMPEG_DIR)/Tit_TaskInfo.cpp $(FFMPEG_DIR)/Audio2pcm.cpp 
 
+FFMPEG_CSOURCES = 

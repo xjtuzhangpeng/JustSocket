@@ -19,7 +19,7 @@ BuffLink::~BuffLink()
         to_delate = tmp;
         tmp       = tmp->next;
 
-        LOG_PRINT_INFO("delete one buff to_delate:%p", to_delate);
+        //LOG_PRINT_INFO("delete one buff to_delate:%p", to_delate);
 
         delete to_delate;
         to_delate = NULL;
@@ -29,7 +29,7 @@ BuffLink::~BuffLink()
 void BuffLink::Add()
 {
     BuffNode *tmp = new BuffNode();
-    LOG_PRINT_INFO("new one buff link:%p", tmp);
+    //LOG_PRINT_INFO("new one buff link:%p", tmp);
     if (tail == NULL)
     {
         tail = head = tmp;
@@ -66,9 +66,9 @@ void BuffLink::UpdateBuffLen(size_t diff)
 {
     if (diff > (BUFF_NODE_LEN - tail->offset))
     {
-        LOG_PRINT_WARN("the input size %lu is too long -- ", diff);
+        //LOG_PRINT_WARN("the input size %lu is too long -- ", diff);
         diff = BUFF_NODE_LEN - tail->offset;
-        LOG_PRINT_WARN(" -- cut it to %d", diff);
+        //LOG_PRINT_WARN(" -- cut it to %d", diff);
     }
     tail->offset += diff;
     return;

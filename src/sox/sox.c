@@ -391,7 +391,7 @@ static void play_file_info(sox_format_t * ft, file_t * f, sox_bool full) {
 
 static void display_file_info(sox_format_t * ft, file_t * f, sox_bool full) {
     static char const * const no_yes[] = { "no", "yes" };
-    FILE * const output = sox_mode == sox_soxi ? stdout : stderr;
+    FILE * const output = sox_mode == sox_soxi ? stdout : stderr; // 更改这个输出的流 - zhangpeng
     char const * filetype = lsx_find_file_extension(ft->filename);
     sox_bool show_type = sox_true;
     size_t i;
