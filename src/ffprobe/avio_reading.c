@@ -34,6 +34,8 @@
 #include <libavformat/avio.h>
 #include <libavutil/file.h>
 
+#include "Tit_Logger_C.h"
+
 struct buffer_data {
     uint8_t *ptr;
     size_t size; ///< size left in the buffer
@@ -68,10 +70,36 @@ static void InitInfo(int sessionId)
     }
 }
 
-int GetInfo(int sessionId)
+static int PrintfInfo(int sessionId)
 {
-    LOG_PRINT(g_AudioFormatInfo[sessionId]);
+    LOG_PRINT_DEBUG_C("%s", g_AudioFormatInfo[sessionId]);
     return 0;
+}
+
+size_t GetFormatInfo(int sessionId, char *buf, size_t buf_len)
+{
+    size_t len = 0;
+    if (sessionId >= 0 && sessionId < g_SessionNum)
+    {
+        len = strlen(g_AudioFormatInfo[sessionId]);
+        if (buf_len <= len)
+        {
+            len = buf_len - 1;
+        }
+        memcpy(buf, g_AudioFormatInfo[sessionId], len);
+        buf[len] = '\0';
+    }
+    return len;
+}
+
+size_t GetFormatInfoLen(int sessionId)
+{
+    size_t len = 0;
+    if (sessionId >= 0 && sessionId < g_SessionNum)
+    {
+        len = strlen(g_AudioFormatInfo[sessionId]);
+    }
+    return len;
 }
 
 void tit_store_log(char * line, int sessionId)
@@ -104,7 +132,15 @@ int avio_reading_main(char *filename, int sessionid)
     struct buffer_data bd = { 0 };
 
     input_filename = filename;
-    InitInfo(sessionid);
+    if (sessionid >= 0 && sessionid < g_SessionNum)
+    {
+        InitInfo(sessionid);
+    }
+    else
+    {
+        return 1;
+    }
+    
 
     /* register codecs and formats and other lavf/lavc components*/
     av_register_all();
@@ -149,7 +185,7 @@ int avio_reading_main(char *filename, int sessionid)
     }
 
     av_dump_format(fmt_ctx, sessionid, input_filename, 0); // 获取文件的格式 - zhangpeng
-    GetInfo(sessionid);
+    PrintfInfo(sessionid);
 
 end:
     avformat_close_input(&fmt_ctx);
@@ -167,3 +203,4 @@ end:
 
     return 0;
 }
+

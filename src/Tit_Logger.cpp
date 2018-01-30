@@ -60,10 +60,22 @@ void LOGGER::LogPrint(enum eLogLevel level, const char *txt, ...)
             LOG4CPLUS_TRACE(m_pTestLogger, buffer);
             break;
     }
+    delete buffer;
+    buffer = NULL;
 }
 
-extern "C" void LOG_PRINT(char * line)
+extern "C" void LOG_PRINT_C(enum eLogLevel level, char * line, ...)
 {
-    LOG_PRINT_FATAL("%s", line);
+    char *buffer = new char[TIT_MAX_LOG_BUFF];
+    va_list marker; 
+    memset  (buffer, 0x00, TIT_MAX_LOG_BUFF);
+    va_start(marker, line);
+    vsprintf(buffer, line, marker);
+    va_end  (marker);
+
+    G_Log.LogPrint(level, "%s", buffer);
+
+    delete buffer;
+    buffer = NULL;
 }
 
