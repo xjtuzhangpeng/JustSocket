@@ -11,7 +11,7 @@ enum eLogLevel
     TIT_LOG_FATAL_C
 };
 
-// C语言日志
+// C语言日志接口
 extern void LOG_PRINT_C(enum eLogLevel level, char * line, ...);
 #define  LOG_PRINT_TRACE_C(fmt, ...)   \
         do { LOG_PRINT_C(TIT_LOG_TRACE_C, fmt" (%s:%d)", ##__VA_ARGS__, __FILE__, __LINE__); } while(0)

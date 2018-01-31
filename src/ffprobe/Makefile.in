@@ -1,5 +1,5 @@
 FFPROBE_DIR      = ffprobe
 FFPROBE_SOURCES  = 
 
-FFPROBE_CSOURCES = $(FFPROBE_DIR)/avio_reading.c
+FFPROBE_CSOURCES = $(FFPROBE_DIR)/Tit_AVIOReading.c
 
