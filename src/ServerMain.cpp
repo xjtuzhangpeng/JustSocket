@@ -12,7 +12,7 @@
 #define SID(j, i)   sid_head + int2str(j) + "-" + int2str(i);
 
 SocketInfo    G_Server(TCP_PORT);
-LOGGER        G_Log("./2_buff_ffmpeg.log");
+LOGGER        G_Log("./2_buff_ffmpeg.log", -1);
 
 void printfHead(char *buf)
 {
@@ -179,50 +179,41 @@ void test_ffmepg()
 
 }
 
+#define PATH_HEAD "/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio"
+#define MAX_SESSION_NUM 10
+#define SESSION_INCREMENT(sid) ((sid++) % MAX_SESSION_NUM)
 void TestCase_AudioFormat()
 {
-    InitSessionNum(10);
+    InitSessionNum(MAX_SESSION_NUM);
     int sissionId = 0;
-  /*avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/vox/6k4bit_vox.V3", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/vox/6k4bit_vox.vox", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/alaw_noHead/alaw.wav", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/nice/SC_1_6279503347631340410_6279503349759946734_12388905_1_May_1_2016_12_00AM__15698888623_88077070.nmf", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/nice/SC_1_6279503369106176906_6279503371234783219_12388905_112_May_1_2016_12_00AM___88077102.nmf", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/pcm_noHead/pcm_noHead.wav", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/voc/14424390610008.pk", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/voc/14424390610008.voc", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/voc/14432151710001.voc", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/voc/14432152210004.voc", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/voc/14440156310008.voc", sissionId);
-    */
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/ACM/mu-law.wav", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/mp3/8k/8k16bit_8kbps.mp3", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/mp3/8k/8k16bit_28kbps.mp3", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/mp3/8k/8k16bit_29kbps.mp3", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/mp3/8k/8k16bit_30kbps.mp3", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/mp3/44100/4410016bit_128kbps.mp3", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/mp3/4410016bit_128kbps.pcm", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/ACM/alaw.wav", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/ACM/GSM_6.10_13kbps.wav", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/ACM/mu-law.wav", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/adpcm/32kbps_ima_adpcm.wav", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/adpcm/32kbps_microsoft_adpcm.wav", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/m4a/63kbps.m4a", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/other/8kbps.wav", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/other/16kbps.wav", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/pcm/6k16bit_96kbps.wav", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/pcm/8k8bit_64kbps.wav", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/pcm/000194_5s000216_5s000110_5s000232_5s000262_5s000271_5s000324_5s_8k16bit_pcm.wav", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/pcm/0935584.wav", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/verint/XAGR1001_20160805144832_15732665238.WAV", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/verint/XAGR1001_20160805150802_053115688888654.WAV", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/voc/14424390610008.wav", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/voc/14432151710001.wav", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/voc/14432152210004.wav", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/voc/14440156310008.wav", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/mp3/music/test_1.MP3", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/mp3/music/test_2.MP3", sissionId);
-    avio_reading_main("/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/mp3/music/test_3.MP3", sissionId);
+    AVIOReading(PATH_HEAD "/ACM/mu-law.wav", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/mp3/8k/8k16bit_8kbps.mp3", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/mp3/8k/8k16bit_28kbps.mp3", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/mp3/8k/8k16bit_29kbps.mp3", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/mp3/8k/8k16bit_30kbps.mp3", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/mp3/44100/4410016bit_128kbps.mp3", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/mp3/4410016bit_128kbps.pcm", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/ACM/alaw.wav", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/ACM/GSM_6.10_13kbps.wav", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/ACM/mu-law.wav", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/adpcm/32kbps_ima_adpcm.wav", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/adpcm/32kbps_microsoft_adpcm.wav", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/m4a/63kbps.m4a", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/other/8kbps.wav", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/other/16kbps.wav", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/pcm/6k16bit_96kbps.wav", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/pcm/8k8bit_64kbps.wav", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/pcm/000194_5s000216_5s000110_5s000232_5s000262_5s000271_5s000324_5s_8k16bit_pcm.wav", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/pcm/0935584.wav", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/verint/XAGR1001_20160805144832_15732665238.WAV", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/verint/XAGR1001_20160805150802_053115688888654.WAV", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/voc/14424390610008.wav", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/voc/14432151710001.wav", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/voc/14432152210004.wav", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/voc/14440156310008.wav", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/mp3/music/test_1.MP3", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/mp3/music/test_2.MP3", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/mp3/music/test_3.MP3", SESSION_INCREMENT(sissionId));
     return;
 }
 

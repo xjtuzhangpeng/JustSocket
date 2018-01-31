@@ -41,18 +41,23 @@ struct buffer_data {
     size_t size; ///< size left in the buffer
 };
 
+#define STATIC static
+#define PUBLIC
+#define OFFSET_OF_SESSION 0xAABB // to be a special stream index
+#define SESSION_TO_INDEX(sid) ((sid) + OFFSET_OF_SESSION)
+#define INDEX_TO_SESSION(idx) ((idx) - OFFSET_OF_SESSION)
 #define LINE_SZ 1024
 typedef char LINE_BUFF[LINE_SZ];
 
 static int         g_SessionNum = 0;
 static LINE_BUFF * g_AudioFormatInfo = NULL;
 
-static int read_packet(void *opaque, uint8_t *buf, int buf_size)
+STATIC int read_packet(void *opaque, uint8_t *buf, int buf_size)
 {
     struct buffer_data *bd = (struct buffer_data *)opaque;
     buf_size = FFMIN(buf_size, bd->size);
 
-    //printf("ptr:%p size:%zu\n", bd->ptr, bd->size);
+    LOG_PRINT_TRACE_C("ptr:%p size:%zu\n", bd->ptr, bd->size);
 
     /* copy internal buffer data to buf */
     memcpy(buf, bd->ptr, buf_size);
@@ -62,66 +67,56 @@ static int read_packet(void *opaque, uint8_t *buf, int buf_size)
     return buf_size;
 }
 
-static void InitInfo(int sessionId)
+STATIC void InitInfo(int sessionId)
 {
     if (sessionId >= 0 && sessionId < g_SessionNum)
     {
-        memset(g_AudioFormatInfo[sessionId], 0x00, LINE_SZ);
+        memset(g_AudioFormatInfo[(sessionId)], 0x00, LINE_SZ);
     }
 }
 
-static int PrintfInfo(int sessionId)
+STATIC int PrintfInfo(int sessionId)
 {
-    LOG_PRINT_DEBUG_C("%s", g_AudioFormatInfo[sessionId]);
+    LOG_PRINT_DEBUG_C("%s", g_AudioFormatInfo[(sessionId)]);
     return 0;
 }
 
-size_t GetFormatInfo(int sessionId, char *buf, size_t buf_len)
+PUBLIC size_t GetFormatInfo(int sessionId, char *buf, size_t buf_len)
 {
     size_t len = 0;
     if (sessionId >= 0 && sessionId < g_SessionNum)
     {
-        len = strlen(g_AudioFormatInfo[sessionId]);
+        len = strlen(g_AudioFormatInfo[(sessionId)]);
         if (buf_len <= len)
         {
             len = buf_len - 1;
         }
-        memcpy(buf, g_AudioFormatInfo[sessionId], len);
+        memcpy(buf, g_AudioFormatInfo[(sessionId)], len);
         buf[len] = '\0';
     }
     return len;
 }
 
-size_t GetFormatInfoLen(int sessionId)
+PUBLIC size_t GetFormatInfoLen(int sessionId)
 {
     size_t len = 0;
     if (sessionId >= 0 && sessionId < g_SessionNum)
     {
-        len = strlen(g_AudioFormatInfo[sessionId]);
+        len = strlen(g_AudioFormatInfo[(sessionId)]);
     }
     return len;
 }
 
-void tit_store_log(char * line, int sessionId)
-{
-    printf("sessionId %d\n", sessionId);
-    if (sessionId >= 0 && sessionId < g_SessionNum)
-    {
-        memcpy(g_AudioFormatInfo[sessionId], line, strlen(line));
-    }
-}
-
-void InitSessionNum(int sessionNum)
+PUBLIC void InitSessionNum(int sessionNum)
 {
     g_SessionNum      = sessionNum;
     if (g_AudioFormatInfo != NULL)
         free(g_AudioFormatInfo);
     g_AudioFormatInfo = malloc((sizeof(LINE_BUFF) * sessionNum));
-
-    printf("%p %p %p \n", g_AudioFormatInfo[0], g_AudioFormatInfo[1], g_AudioFormatInfo[2]);
+    LOG_PRINT_DEBUG_C("%p %p %p \n", g_AudioFormatInfo[0], g_AudioFormatInfo[1], g_AudioFormatInfo[2]);
 }
 
-int avio_reading_main(char *filename, int sessionid)
+PUBLIC int AVIOReading(char *filename, int sessionid)
 {
     AVFormatContext *fmt_ctx = NULL;
     AVIOContext *avio_ctx = NULL;
@@ -132,15 +127,12 @@ int avio_reading_main(char *filename, int sessionid)
     struct buffer_data bd = { 0 };
 
     input_filename = filename;
-    if (sessionid >= 0 && sessionid < g_SessionNum)
-    {
+    if (sessionid >= 0 && sessionid < g_SessionNum) {
         InitInfo(sessionid);
-    }
-    else
-    {
+    } else {
+        LOG_PRINT_ERROR_C("session id is out of range, sid:%d", sessionid);
         return 1;
     }
-    
 
     /* register codecs and formats and other lavf/lavc components*/
     av_register_all();
@@ -174,17 +166,17 @@ int avio_reading_main(char *filename, int sessionid)
 
     ret = avformat_open_input(&fmt_ctx, NULL, NULL, NULL);
     if (ret < 0) {
-        fprintf(stderr, "Could not open input\n");
+        LOG_PRINT_ERROR_C("Could not open input");
         goto end;
     }
 
     ret = avformat_find_stream_info(fmt_ctx, NULL);
     if (ret < 0) {
-        fprintf(stderr, "Could not find stream information\n");
+        LOG_PRINT_ERROR_C("Could not find stream information");
         goto end;
     }
 
-    av_dump_format(fmt_ctx, sessionid, input_filename, 0); // 获取文件的格式 - zhangpeng
+    av_dump_format(fmt_ctx, SESSION_TO_INDEX(sessionid), input_filename, 0); // 获取文件的格式 - zhangpeng
     PrintfInfo(sessionid);
 
 end:
@@ -197,10 +189,19 @@ end:
     av_file_unmap(buffer, buffer_size);
 
     if (ret < 0) {
-        fprintf(stderr, "Error occurred: %s\n", av_err2str(ret));
+        LOG_PRINT_ERROR_C("Error occurred: %s", av_err2str(ret));
         return 1;
     }
 
     return 0;
+}
+
+PUBLIC void tit_store_log(char *line, int indx)
+{
+    LOG_PRINT_INFO_C("index %d, session %d", indx, INDEX_TO_SESSION(indx));
+    if (indx >= OFFSET_OF_SESSION && indx < SESSION_TO_INDEX(g_SessionNum))
+    {
+        memcpy(g_AudioFormatInfo[INDEX_TO_SESSION(indx)], line, strlen(line));
+    }
 }
 

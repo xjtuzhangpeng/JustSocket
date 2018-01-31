@@ -3,7 +3,7 @@
 using namespace log4cplus;
 using namespace log4cplus::helpers;
 
-LOGGER::LOGGER(std::string filename)
+LOGGER::LOGGER(std::string filename, int logLevel)
 {
     //std::string filename = "./2_buff_ffmpeg.log";
     std::string pattern  = "%D{%m/%d/%y %H:%M:%S} - [%p] %m%n";
@@ -24,14 +24,24 @@ LOGGER::LOGGER(std::string filename)
     
     // 输出日志信息
     LOG4CPLUS_WARN(m_pTestLogger, "This is a <Warn> log message...");
+    m_logLevel = logLevel;
 }
 
 LOGGER::~LOGGER()
 {
 }
 
+int  LOGGER::GetLogLevel()
+{
+    return m_logLevel;
+}
+
 void LOGGER::LogPrint(enum eLogLevel level, const char *txt, ...)
 {
+    if (level < m_logLevel)
+    {
+        return;
+    }
     char *buffer = new char[TIT_MAX_LOG_BUFF];
     va_list marker;	
 	memset  (buffer, 0x00, TIT_MAX_LOG_BUFF);
@@ -41,6 +51,9 @@ void LOGGER::LogPrint(enum eLogLevel level, const char *txt, ...)
 
     switch(level)
     {
+        case TIT_LOG_TRACE:
+            LOG4CPLUS_TRACE(m_pTestLogger, buffer);
+            break;
         case TIT_LOG_DEBUG:
             LOG4CPLUS_DEBUG(m_pTestLogger, buffer);
             break;
@@ -66,6 +79,11 @@ void LOGGER::LogPrint(enum eLogLevel level, const char *txt, ...)
 
 extern "C" void LOG_PRINT_C(enum eLogLevel level, char * line, ...)
 {
+    if (level < G_Log.GetLogLevel())
+    {
+        return;
+    }
+    
     char *buffer = new char[TIT_MAX_LOG_BUFF];
     va_list marker; 
     memset  (buffer, 0x00, TIT_MAX_LOG_BUFF);

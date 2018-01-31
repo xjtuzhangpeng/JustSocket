@@ -7,9 +7,9 @@ extern "C" {
 void   InitSessionNum(int sessionNum);
 size_t GetFormatInfo(int sessionId, char *buf, size_t buf_len);
 size_t GetFormatInfoLen(int sessionId);
-int    avio_reading_main(char *filename, int sessionid);
+int    AVIOReading(char *filename, int sessionid);
 
-void tit_store_log(char * line, int sessionId);
+void tit_store_log(char *line, int indx);
 #ifdef __cplusplus
 }
 #endif

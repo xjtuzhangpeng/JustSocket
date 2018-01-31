@@ -14,6 +14,7 @@
 
 enum eLogLevel
 {
+    TIT_LOG_TRACE,
     TIT_LOG_DEBUG,
     TIT_LOG_INFO,
     TIT_LOG_WARN,
@@ -24,12 +25,14 @@ enum eLogLevel
 class LOGGER
 {
 public:
-    LOGGER(std::string filename);
+    LOGGER(std::string filename, int logLevel);
     ~LOGGER();
 
     void LogPrint(enum eLogLevel level, const char *txt, ...);
+    int  GetLogLevel();
 private:
     log4cplus::Logger    m_pTestLogger;
+    int                  m_logLevel;
 };
 
 extern LOGGER G_Log;
