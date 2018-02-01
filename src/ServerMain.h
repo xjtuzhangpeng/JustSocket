@@ -11,7 +11,7 @@
 #include "Tit_SocketInfo.h"
 #include "Tit_Resample.h"
 #include "Tit_MonoStereo.h"
-#include "avio_reading.h"
+#include "Tit_AVIOReading.h"
 
 #define SOX_VOX_1(tempWavName, outWavName) \
     "sox -e oki-adpcm -b 4 -r 6k " + tempWavName + " -b 16 -r 8000 " + outWavName + " highpass 10"

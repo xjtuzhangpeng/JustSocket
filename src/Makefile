@@ -7,7 +7,7 @@ include soxr/Makefile.in
 #CFLAGS  = -O3 -Wall $(DEFS) $(INCLUDES)
 INCLUDES = -I. -I../include -Iffmpeg -Isox -Isoxr -Iffprobe
 DEFS     = 
-LIBS     = -L../lib  -llog4cplus -lffmpegsox -lavformat -lavcodec -lavutil -lsox -lsoxr-lsr -lsoxr
+LIBS     = -L../lib  -llog4cplus -lffmpegsox -lavformat -lavcodec -lavutil -lsox -lsoxr-lsr -lsoxr -ltit
 CFLAGS   = $(CFLAGS1) $(DEFS) $(INCLUDES)
 LINKING  = $(CC) $(CFLAGS) $(LIBS) -o $@ $^
 
