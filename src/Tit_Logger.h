@@ -38,6 +38,8 @@ private:
 extern LOGGER G_Log;
 
 #if 1
+#define  LOG_PRINT_TRACE(fmt, ...)   \
+    do { G_Log.LogPrint(TIT_LOG_TRACE, fmt" (%s:%d)", ##__VA_ARGS__, __FILE__, __LINE__); } while(0)
 #define  LOG_PRINT_DEBUG(fmt, ...)   \
     do { G_Log.LogPrint(TIT_LOG_DEBUG, fmt" (%s:%d)", ##__VA_ARGS__, __FILE__, __LINE__); } while(0)
 #define  LOG_PRINT_INFO(fmt, ...)    \

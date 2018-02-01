@@ -186,6 +186,7 @@ void TestCase_AudioFormat()
 {
     InitSessionNum(MAX_SESSION_NUM);
     int sissionId = 0;
+    /*
     AVIOReading(PATH_HEAD "/ACM/mu-law.wav", SESSION_INCREMENT(sissionId));
     AVIOReading(PATH_HEAD "/mp3/8k/8k16bit_8kbps.mp3", SESSION_INCREMENT(sissionId));
     AVIOReading(PATH_HEAD "/mp3/8k/8k16bit_28kbps.mp3", SESSION_INCREMENT(sissionId));
@@ -213,8 +214,29 @@ void TestCase_AudioFormat()
     AVIOReading(PATH_HEAD "/voc/14440156310008.wav", SESSION_INCREMENT(sissionId));
     AVIOReading(PATH_HEAD "/mp3/music/test_1.MP3", SESSION_INCREMENT(sissionId));
     AVIOReading(PATH_HEAD "/mp3/music/test_2.MP3", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/mp3/music/test_3.MP3", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/mp3/music/test_3.MP3", SESSION_INCREMENT(sissionId));*/
     return;
+}
+
+void TestCase_Audio2Pcm()
+{
+    Audio2Pcm   audio2Pcm;
+    std::string cmd = \
+        "sox -e oki-adpcm -b 4 -r 6k " PATH_HEAD "/vox/6k4bit_vox.vox -b 16 -r 8000 VOC_tmp.wav highpass 10";
+    audio2Pcm.CallCodecFunction(cmd);
+
+    std::string session = "VOC_tmp.wav";
+    size_t  buf_len = GetSoxBufLen(session);
+    char   *buf     = new char[buf_len];
+    LOG_PRINT_DEBUG("%d, buf-len %d", buf_len, CopySoxBuf(session, buf, buf_len));
+
+    std::string sid = "VOC_tmp_1.wav";
+    LOG_PRINT_DEBUG("FileName: %s", sid.c_str());
+    FILE *fp = fopen(sid.c_str(), "w+");
+    fwrite(buf, buf_len, 1, fp);
+    fclose(fp);
+    delete buf;
+    buf = NULL;
 }
 
 int main(int agrs, char *argv[])
@@ -231,7 +253,8 @@ int main(int agrs, char *argv[])
     //Audio2Pcm audio;
     //audio.CallCodecFunction(sox_cmd);
 
-    TestCase_AudioFormat();
+    //TestCase_AudioFormat();
+    TestCase_Audio2Pcm();
 
     return 0;
 }

@@ -660,12 +660,16 @@ static int ostart(sox_effect_t *effp) {
     return SOX_SUCCESS;
 }
 
-static int output_flow(sox_effect_t *effp, sox_sample_t const * ibuf,
-        sox_sample_t * obuf, size_t * isamp, size_t * osamp) {
+static int output_flow(sox_effect_t       * effp,
+                       sox_sample_t const * ibuf,
+                       sox_sample_t       * obuf,
+                       size_t             * isamp,
+                       size_t             * osamp)
+{
     size_t len;
 
     (void) effp, (void) obuf;
-    if (show_progress)
+    if (show_progress) {
         for (len = 0; len < *isamp; len += effp->in_signal.channels) {
             omax[0] = max(omax[0], ibuf[len]);
             omin[0] = min(omin[0], ibuf[len]);
@@ -677,23 +681,35 @@ static int output_flow(sox_effect_t *effp, sox_sample_t const * ibuf,
                 omin[1] = omin[0];
             }
         }
-    *osamp = 0;
-    len = *isamp ? sox_write(ofile->ft, ibuf, *isamp) : 0;
+    }
+    *osamp          = 0;
+    len             = *isamp ? sox_write(ofile->ft, ibuf, *isamp) : 0;
     output_samples += len / ofile->ft->signal.channels;
-    output_eof = (len != *isamp) ? sox_true : sox_false;
+    output_eof      = (len != *isamp) ? sox_true : sox_false;
     if (len != *isamp) {
-        if (ofile->ft->sox_errno)
-        lsx_fail("`%s' %s: %s", ofile->ft->filename,
-        ofile->ft->sox_errstr, sox_strerror(ofile->ft->sox_errno));
+        if (ofile->ft->sox_errno) {
+            lsx_fail("`%s' %s: %s",
+                     ofile->ft->filename,
+                     ofile->ft->sox_errstr,
+                     sox_strerror(ofile->ft->sox_errno));
+        }
         return SOX_EOF;
     }
     return SOX_SUCCESS;
 }
 
 static sox_effect_handler_t const * output_effect_fn(void) {
-    static sox_effect_handler_t handler = { "output", 0, SOX_EFF_MCHAN
-            | SOX_EFF_MODIFY | SOX_EFF_PREC, NULL, ostart, output_flow, NULL,
-            NULL, NULL, 0 };
+    static sox_effect_handler_t handler = 
+        { "output",
+          0,
+          SOX_EFF_MCHAN | SOX_EFF_MODIFY | SOX_EFF_PREC,
+          NULL,
+          ostart,
+          output_flow,
+          NULL,
+          NULL,
+          NULL,
+          0 };
     return &handler;
 }
 
@@ -1557,7 +1573,7 @@ static void open_output_file(void) {
         else
         expand_fn = lsx_strdup(ofile->filename);
     ofile->ft = sox_open_write(expand_fn, &ofile->signal, &ofile->encoding,
-            ofile->filetype, &oob, overwrite_permitted);
+            ofile->filetype, &oob, overwrite_permitted); // 打开文件 - zhangpeng
     sox_delete_comments(&oob.comments);
     free(expand_fn);
 
@@ -1808,7 +1824,7 @@ static int process(void) { /* Input(s) -> Balancing -> Combiner -> Effects -> Ou
     }
     flow_status = sox_flow_effects(effects_chain, update_status, NULL);
 
-    /* Don't return SOX_EOF if
+    /* Don't return SOX_EOF if  重要 SOX_EOF - zhangpeng
      * 1) input reach EOF and there are more input files to process or
      * 2) output didn't return EOF (disk full?) there are more
      *    effect chains.
@@ -3031,6 +3047,7 @@ int SOX_main(int argc, char **argv) {
     input_count = file_count ? file_count - 1 : 0;
 
     if (file_count) {
+        // 获取sox format 句柄 - zhangpeng
         sox_format_handler_t const * handler = sox_write_handler(ofile->filename, ofile->filetype, NULL);
         is_player = handler && (handler->flags & SOX_FILE_DEVICE) && !(handler->flags & SOX_FILE_PHONY);
     }
@@ -3153,6 +3170,7 @@ int SOX_main(int argc, char **argv) {
         read_user_effects(effects_filename);
     }
 
+    // 开始循环处理转码 - zhangpeng 
     while (process() != SOX_EOF && !user_abort && current_input < input_count) {
         if (advance_eff_chain() == SOX_EOF)
             break;
