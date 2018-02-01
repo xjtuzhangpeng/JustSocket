@@ -1,4 +1,7 @@
 #include "Tit_BuffLink.h"
+#include "Tit_Map.h"
+
+static TIT_Map<BuffLink *> g_SoxBufMap;
 
 #ifdef  _NODE_LINK_
 BuffLink::BuffLink()
@@ -41,12 +44,34 @@ void BuffLink::Add()
     }
 }
 
+void BuffLink::Add(size_t buf_len)
+{
+    BuffNode *tmp = new BuffNode(buf_len);
+    //LOG_PRINT_INFO("new one buff link:%p", tmp);
+    if (tail == NULL)
+    {
+        tail = head = tmp;
+    }
+    else
+    {
+        tail->next = tmp;
+        tail       = tmp;
+    }
+}
+
 BuffNode * BuffLink::GetTail()
 {
     if (NULL == tail || BUFF_NODE_LEN == tail->offset)
     {
         Add();
     }
+    return tail;
+}
+
+
+BuffNode * BuffLink::GetTail(size_t buf_len)
+{
+    Add(buf_len);
     return tail;
 }
 
@@ -118,5 +143,43 @@ size_t BuffLink::CopyBuff(char *buf, size_t buf_len)
     }
 
     return len;
+}
+
+extern "C" void * GetTitBuff(const char *filename, size_t buff_len, size_t sample_len)
+{
+    std::string fileName = filename;
+
+    if (g_SoxBufMap.find(fileName) != g_SoxBufMap.end())
+    {
+        g_SoxBufMap[fileName] = new BuffLink();
+    }
+
+    BuffLink *link = g_SoxBufMap[fileName];
+    BuffNode *node = link->GetTail(buff_len);
+
+    LOG_PRINT_WARN(" ----- ");
+
+    return (void *)node->buff;
+}
+
+size_t GetSoxBufLen(std::string filename)
+{
+    if (g_SoxBufMap.find(filename) != g_SoxBufMap.end())
+    {
+        return 0;
+    }
+    BuffLink *link = g_SoxBufMap[filename];
+
+    return link->BuffLen();
+}
+
+size_t CopySoxBuf(std::string filename, char *buff, size_t len)
+{
+    if (g_SoxBufMap.find(filename) != g_SoxBufMap.end())
+    {
+        return 0;
+    }
+    BuffLink *link = g_SoxBufMap[filename];
+    return link->CopyBuff(buff, len);
 }
 #endif

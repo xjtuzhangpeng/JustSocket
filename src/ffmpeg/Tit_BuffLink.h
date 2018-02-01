@@ -25,6 +25,12 @@ public:
         //LOG_PRINT_INFO("new one buff buff:%p", buff);
     }
 
+    BuffNode(size_t buf_len) : offset(buf_len), next(NULL)
+    {
+        buff = new char[buf_len];
+        //LOG_PRINT_INFO("new one buff buff:%p", buff);
+    }
+
     ~BuffNode()
     {
         delete buff;
@@ -47,8 +53,10 @@ public:
     void   UpdateBuffLen(size_t diff);
     
     BuffNode * GetTail();
+    BuffNode * GetTail(size_t buf_len);
 private:
     void Add();
+    void Add(size_t buf_len);
 
     BuffNode     *head;
     BuffNode     *tail;
