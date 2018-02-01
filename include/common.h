@@ -31,7 +31,7 @@ typedef struct
   
 // a-law文件头  
 typedef struct  
-{  
+{
     uint32 ChunkID;             //00H 4 char "RIFF"标志  
     uint32 ChunkSize;           //04H 4 long int 文件长度 文总长-8  
     uint32 Format;              //08H 4 char "WAVE"标志  
@@ -49,7 +49,7 @@ typedef struct
     uint32 Temp2;               //2EH 4 0x00530700H  
     uint32 DataTag;             //32H 4 char 数据标记符＂data＂  
     uint32 DataLen;             //36H 4 long int 语音数据的长度(文长-58)  
-} __attribute__((packed)) ALAW_HEAD, *PALAW_HEAD;  
+} __attribute__((packed)) ALAW_HEAD, *PALAW_HEAD;
 
 
 //支持的语种格式
