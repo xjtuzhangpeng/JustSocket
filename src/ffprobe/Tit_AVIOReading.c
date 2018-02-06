@@ -81,20 +81,13 @@ STATIC int PrintfInfo(int sessionId)
     return 0;
 }
 
-PUBLIC size_t GetFormatInfo(int sessionId, char *buf, size_t buf_len)
+PUBLIC char * GetFormatInfo(int sessionId)
 {
-    size_t len = 0;
     if (sessionId >= 0 && sessionId < g_SessionNum)
     {
-        len = strlen(g_AudioFormatInfo[(sessionId)]);
-        if (buf_len <= len)
-        {
-            len = buf_len - 1;
-        }
-        memcpy(buf, g_AudioFormatInfo[(sessionId)], len);
-        buf[len] = '\0';
+        return g_AudioFormatInfo[sessionId];
     }
-    return len;
+    return NULL;
 }
 
 PUBLIC size_t GetFormatInfoLen(int sessionId)
@@ -109,7 +102,7 @@ PUBLIC size_t GetFormatInfoLen(int sessionId)
 
 PUBLIC void InitSessionNum(int sessionNum)
 {
-    g_SessionNum      = sessionNum;
+    g_SessionNum = sessionNum;
     if (g_AudioFormatInfo != NULL)
         free(g_AudioFormatInfo);
     g_AudioFormatInfo = malloc((sizeof(LINE_BUFF) * sessionNum));

@@ -12,7 +12,6 @@
 
 #include "Tit_Map.h"
 #include "Tit_TaskInfo.h"
-#include "Audio2pcm.h"
 
 #define WAIT_TASK_OR_RESULT     1000   // us
 #define MAX_NUM_OF_THREAD       10
@@ -29,8 +28,8 @@ public:
                );
     ~SocketInfo();
 
-    size_t GetBuff(std::string sessionId, char *buf, size_t buff_len);
-    size_t GetBuffLen(std::string &sessionId);
+    size_t GetFFmpegBuff(std::string sessionId, char *buf, size_t buff_len);
+    size_t GetFFmpegBuffLen(std::string &sessionId);
     void   InsertOneTask(std::string &sessionId, std::string &command);
 
 private:
@@ -66,11 +65,9 @@ private:
     std::mutex                m_task_mutex;
     std::queue<std::string>   m_task_sessionId;
 
-    TIT_Map<TaskInfo *>       m_task_map;
-    Audio2Pcm                 m_Audio2Pcm;
-
     std::mutex                m_thread_mutex;
     size_t                    m_thread_num;
+    TIT_Map<std::string, TaskInfo *> m_task_map;
 };
 
 #endif

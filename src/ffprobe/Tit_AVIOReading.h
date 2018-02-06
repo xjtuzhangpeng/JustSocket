@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 void   InitSessionNum(int sessionNum);
-size_t GetFormatInfo(int sessionId, char *buf, size_t buf_len);
+char * GetFormatInfo(int sessionId);
 size_t GetFormatInfoLen(int sessionId);
 int    AVIOReading(char *filename, int sessionid);
 

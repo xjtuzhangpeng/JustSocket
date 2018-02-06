@@ -25,7 +25,7 @@ public:
         //LOG_PRINT_INFO("new one buff buff:%p", buff);
     }
 
-    BuffNode(size_t buf_len) : offset(buf_len), next(NULL)
+    BuffNode(size_t buf_len) : offset(0), next(NULL)
     {
         buff = new char[buf_len];
         //LOG_PRINT_INFO("new one buff buff:%p", buff);

@@ -152,67 +152,83 @@ typedef struct TIT_FILE
     size_t    buf_len;
     size_t    offset;
 }TIT_FILE;
-static TIT_Map<BuffLink *> g_SoxBufMap;
-static TIT_Map<TIT_FILE *> g_SoxFileMap;
+static TIT_Map<std::string, BuffLink *> g_SoxBufMap;
+static TIT_Map<std::string, TIT_FILE *> g_SoxFileMap;
 
-extern "C" size_t ReadTitBuff(const char * filename, void *buf, size_t len)
-{
-    if (filename == NULL || buf == NULL)
+#ifdef __cplusplus
+extern "C" {
+#endif
+    size_t ReadTitBuff(const char * filename, void *buf, size_t len)
     {
-        LOG_PRINT_WARN("filename %p, buf %p", filename, buf);
-        return 0;
+        if (filename == NULL || buf == NULL)
+        {
+            LOG_PRINT_WARN("filename %p, buf %p", filename, buf);
+            return 0;
+        }
+
+        std::string fileName = filename;
+        if (len == 0 || g_SoxFileMap.find(fileName) == g_SoxFileMap.end())
+        {
+            //LOG_PRINT_WARN("len %lu", len);
+            return 0;
+        }
+
+        TIT_FILE * file = g_SoxFileMap[fileName];
+        size_t     tmp  = len > (file->buf_len - file->offset) ? (file->buf_len - file->offset) : len;
+        memcpy(buf, file->buf + file->offset, tmp);
+        file->offset += tmp;
+
+        if (file->offset == file->buf_len)
+        {
+            g_SoxFileMap.erase(g_SoxFileMap.find(fileName));
+        }
+        return tmp;
     }
 
-    std::string fileName = filename;
-    if (len == 0 || g_SoxBufMap.find(fileName) == g_SoxBufMap.end())
+    size_t WriteTitBuff(const char *filename, const char *buf, size_t len)
     {
-        //LOG_PRINT_WARN("len %lu", len);
-        return 0;
-    }
+        std::string fileName = filename;
 
-    TIT_FILE * file = g_SoxFileMap[fileName];
-    size_t     tmp  = len > (file->buf_len - file->offset) ? (file->buf_len - file->offset) : len;
-    memcpy(buf, file->buf + file->offset, tmp);
-    file->offset += tmp;
+        if (g_SoxBufMap.find(fileName) == g_SoxBufMap.end())
+        {
+            LOG_PRINT_TRACE("new a Bufflink");
+            g_SoxBufMap[fileName] = new BuffLink();
+        }
 
-    if (file->offset == file->buf_len)
-    {
-        g_SoxBufMap.erase(g_SoxBufMap.find(fileName));
+        BuffLink *link = g_SoxBufMap[fileName];
+        BuffNode *node = link->GetTail(len);
+
+        memcpy(node->buff, buf, len);
+        node->offset = len;
+        LOG_PRINT_WARN("%s ----- %lu", filename, len);
+
+        return len;
     }
-    return tmp;
+#ifdef __cplusplus
 }
+#endif
 
 bool StoreTitBuff(std::string filename, char *buf, size_t len)
 {
-    if (len == 0 || g_SoxBufMap.find(filename) == g_SoxBufMap.end())
+    if (len == 0)
     {
         return false;
     }
 
-    TIT_FILE * file = g_SoxFileMap[filename];
-    file->buf     = buf;
-    file->buf_len = len;
-    file->offset  = 0;
-    return true;
-}
-
-
-extern "C" void * GetTitBuff(const char *filename, size_t buff_len, size_t sample_len)
-{
-    std::string fileName = filename;
-
-    if (g_SoxBufMap.find(fileName) == g_SoxBufMap.end())
+    if (g_SoxFileMap.find(filename) != g_SoxFileMap.end())
     {
-        LOG_PRINT_TRACE("new a Bufflink");
-        g_SoxBufMap[fileName] = new BuffLink();
+        TIT_FILE * file = g_SoxFileMap[filename];
+        delete file->buf;
+        file->buf = NULL;
+        g_SoxFileMap.erase(g_SoxFileMap.find(filename));
     }
 
-    BuffLink *link = g_SoxBufMap[fileName];
-    BuffNode *node = link->GetTail(buff_len);
-
-    LOG_PRINT_WARN("%s ----- %d, %d", filename, buff_len, sample_len);
-
-    return (void *)node->buff;
+    TIT_FILE * file = new TIT_FILE();
+    file->buf       = buf;
+    file->buf_len   = len;
+    file->offset    = 0;
+    g_SoxFileMap[filename] = file;
+    return true;
 }
 
 size_t GetSoxBufLen(std::string filename)

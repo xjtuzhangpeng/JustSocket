@@ -40,13 +40,13 @@ void *ResultThread(std::string sid_head, int j, int i)
     size_t      len      = 0;
 
     sid = SID(j, i);
-    while ( static_cast<long>(len = G_Server.GetBuffLen(sid)) < 0 )
+    while ( static_cast<long>(len = G_Server.GetFFmpegBuffLen(sid)) < 0 )
     {
         usleep(WAIT_TASK_OR_RESULT);
     }
 
     char *buf = new char[len + 10];
-    if (len != G_Server.GetBuff(sid, buf, len + 10))
+    if (len != G_Server.GetFFmpegBuff(sid, buf, len + 10))
     {
         LOG_PRINT_ERROR("sid: %s, len = %lu %x", sid.c_str(), len, len);
     }
@@ -155,7 +155,8 @@ void test_ffmepg()
     LOG_PRINT_FATAL("main start ... ");
 
     std::thread thrd_0(std::bind(task_thread, sid_head, 0));
-    /*std::thread thrd_1(std::bind(task_thread, sid_head, 1));
+    std::thread thrd_0(std::bind(task_thread, sid_head, 0));
+    std::thread thrd_1(std::bind(task_thread, sid_head, 1));
     std::thread thrd_2(std::bind(task_thread, sid_head, 2));
     std::thread thrd_3(std::bind(task_thread, sid_head, 3));
     std::thread thrd_4(std::bind(task_thread, sid_head, 4));
@@ -163,10 +164,10 @@ void test_ffmepg()
     std::thread thrd_6(std::bind(task_thread, sid_head, 6));
     std::thread thrd_7(std::bind(task_thread, sid_head, 7));
     std::thread thrd_8(std::bind(task_thread, sid_head, 8));
-    std::thread thrd_9(std::bind(task_thread, sid_head, 9));*/
+    std::thread thrd_9(std::bind(task_thread, sid_head, 9));
 
     thrd_0.join();
-    /*thrd_1.join();
+    thrd_1.join();
     thrd_2.join();
     thrd_3.join();
     thrd_4.join();
@@ -186,7 +187,7 @@ void TestCase_AudioFormat()
 {
     InitSessionNum(MAX_SESSION_NUM);
     int sissionId = 0;
-    /*
+
     AVIOReading(PATH_HEAD "/ACM/mu-law.wav", SESSION_INCREMENT(sissionId));
     AVIOReading(PATH_HEAD "/mp3/8k/8k16bit_8kbps.mp3", SESSION_INCREMENT(sissionId));
     AVIOReading(PATH_HEAD "/mp3/8k/8k16bit_28kbps.mp3", SESSION_INCREMENT(sissionId));
@@ -214,16 +215,16 @@ void TestCase_AudioFormat()
     AVIOReading(PATH_HEAD "/voc/14440156310008.wav", SESSION_INCREMENT(sissionId));
     AVIOReading(PATH_HEAD "/mp3/music/test_1.MP3", SESSION_INCREMENT(sissionId));
     AVIOReading(PATH_HEAD "/mp3/music/test_2.MP3", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/mp3/music/test_3.MP3", SESSION_INCREMENT(sissionId));*/
+    AVIOReading(PATH_HEAD "/mp3/music/test_3.MP3", SESSION_INCREMENT(sissionId));
     return;
 }
 
 void TestCase_Audio2Pcm()
 {
-    Audio2Pcm   audio2Pcm;
+    Audio2Pcm   audio2Pcm(MAX_NUM_OF_THREAD);
     std::string cmd = \
         "sox -e oki-adpcm -b 4 -r 6k " PATH_HEAD "/vox/6k4bit_vox.vox -b 16 -r 8000 VOC_tmp.wav highpass 10";
-    audio2Pcm.CallCodecFunction(cmd);
+    audio2Pcm.CallCodecFunction(1, cmd);
 
     std::string session = "VOC_tmp.wav";
     size_t  buf_len = GetSoxBufLen(session);

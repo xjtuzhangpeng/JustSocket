@@ -1,6 +1,9 @@
 #ifndef _TIT_COMMON_H_
 #define _TIT_COMMON_H_
 #include <stdlib.h>
+#include <string>
+#include <vector>
+#include <sstream>
 
 #define TBNR_INPUT_SAMPLES       (8000)
 #define PCM_HEAD_LEN             sizeof(PCM_HEAD)
@@ -9,6 +12,7 @@
 typedef unsigned char   uint8;
 typedef unsigned int    uint32;
 typedef unsigned short  uint16;
+typedef std::string::size_type string_size;
 
 // pcm文件头  
 typedef struct
@@ -72,19 +76,71 @@ enum VoiceType
 //语音声道数
 enum ChannelNum
 {
-	CHANNEL_MONO=1,	//单声道
+    CHANNEL_UNKNOW=0,	//unknow
+	CHANNEL_MONO=1,		//单声道
 	CHANNEL_STEREO,		//双声道
 };
 
 //双声道语音转码方式
 enum  StereoOnMode
 {
+    NOT_STEREO=-1,		//
 	STEREO_ON_0=0,		//只将两个单声道语音合并成一个分录的双声道语音，并删除原来的两个单声道语音
 	STEREO_ON_1,		//将分录的双声道语音合并成一个合录的单声道语音
 	STEREO_ON_2,		//将分录双声道的左右声道解码成两个单声道
 	STEREO_ON_3,		//将分录双声道的左右声道解码成两个单声道同时，还需合并成一个单声道
 	STEREO_ON_4			//合录双声道，左右声道内容一样，都是多个人的对话，则仅保留一个声道内容
 };
+
+static inline std::string int2str(const int &input)
+{
+    std::string        output;
+    std::ostringstream oStream;
+
+    oStream << input;
+    output = oStream.str();
+
+    return output;
+}
+
+static inline int str2int(const std::string &input)
+{
+    int                output = 0;
+    std::istringstream iStream;
+
+    if(input.empty())
+    {
+        return 0;
+    }
+
+    iStream.str(input);
+    iStream >> output;
+
+    return output;
+}
+
+static inline void SplitString(const std::string& s, std::vector<std::string>& v, const std::string& c)
+{
+    string_size pos1, pos2;
+    pos2 = s.find(c);
+    pos1 = 0;
+
+    while(std::string::npos != pos2)
+    {
+        if (pos1 < pos2)
+        {
+            v.push_back(s.substr(pos1, pos2 - pos1));
+        }
+
+        pos1 = pos2 + c.size();
+        pos2 = s.find(c, pos1);
+    }
+
+    if(pos1 != s.length())
+    {
+        v.push_back(s.substr(pos1));
+    }
+}
 
 #endif
 

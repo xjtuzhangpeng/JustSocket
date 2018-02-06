@@ -22,7 +22,7 @@ SocketInfo::~SocketInfo()
 {
 }
 
-size_t SocketInfo::GetBuffLen(std::string &sessionId)
+size_t SocketInfo::GetFFmpegBuffLen(std::string &sessionId)
 {
     size_t    len  = -1;
 
@@ -49,7 +49,7 @@ size_t SocketInfo::GetBuffLen(std::string &sessionId)
     return len;
 }
 
-size_t SocketInfo::GetBuff(std::string sessionId, char *buf, size_t buff_len)
+size_t SocketInfo::GetFFmpegBuff(std::string sessionId, char *buf, size_t buff_len)
 {
     size_t    len  = 0;
 
