@@ -52,9 +52,7 @@ public:
     ~Audio2Pcm();
 
     //将语音转码为8k_16bit_pcm格式
-    bool audio2pcm(DecodePara *para);
-    void CallCodecFunction(int sessionId, string &cmd);
-
+    bool   audio2pcm(DecodePara *para);
     size_t GetAudioBuf(int sessionId, char **buf_ptr);
 private:
     typedef struct _AudioBuf
@@ -97,6 +95,7 @@ private:
         }
     }AudioBuf;
 
+    void CallCodecFunction(int sessionId, string &cmd);
     void ParseAudioFormatInfo(int sessionId);
     void ReadInWavToAudioBuf(int sessionId);
     void SendBufToSox(AudioBuf *AuBufPtr, DecodePara *decodePara);

@@ -43,6 +43,12 @@ void Audio2Pcm::ParseAudioFormatInfo(int sessionId)
     AVIOReading(const_cast<char *> (decodePara->inWavName.c_str()), decodePara->sessionId);
     string info = GetFormatInfo(decodePara->sessionId);
 
+    if (info.empty())
+    {
+        LOG_PRINT_ERROR("Audio info is empty");
+        return;
+    }
+
     PraseAudioInfo audioInfo(info);
     // todo: 优先按照客户的设置来处理
     decodePara->trueFormat  = audioInfo.GetAudioType();
@@ -723,12 +729,27 @@ void Audio2Pcm::CallCodecFunction(int sessionId, string &cmd)
     else if ("ffmpeg" == vct[0])
     {
         string sid = int2str(sessionId);
-
+        string cmd_socket = "";
+        for (int i = 0; i < vct.size() - 1; i++)
+        {
+            cmd_socket += vct[i] + " ";
+        }
+        cmd_socket += "tcp://127.0.0.1:" + int2str(FFMEPG_SOCKET_PORT);
+        LOG_PRINT_DEBUG("cmd_socket %s", cmd_socket.c_str());
         //在对应的线程队列插入一条任务
-        m_audioSocket->InsertOneTask(sid, cmd);
+        m_audioSocket->InsertOneTask(sid, cmd_socket);
 
         //获取编解码器的输出
-        AuBufPtr->buf_out_size = m_audioSocket->GetFFmpegBuffLen(sid);
+        while (true)
+        {
+            AuBufPtr->buf_out_size = m_audioSocket->GetFFmpegBuffLen(sid);
+            if (AuBufPtr->buf_out_size != (size_t)(-1))
+            {
+                break;
+            }
+            usleep(100);
+        }
+        LOG_PRINT_DEBUG("AuBufPtr->buf_out_size %lu", AuBufPtr->buf_out_size);
         AuBufPtr->buf_out      = new char[AuBufPtr->buf_out_size];
         m_audioSocket->GetFFmpegBuff(sid, AuBufPtr->buf_out, AuBufPtr->buf_out_size);
     }
@@ -775,7 +796,7 @@ bool Audio2Pcm::audio2pcm(DecodePara *para)
     //计算原始语音扩展名
     size_t pathSymbolPos  = decodePara->inWavName.rfind("/");
 	size_t dotpos         = decodePara->inWavName.rfind(".");
-	string basename       = decodePara->inWavName.substr(pathSymbolPos+1, dotpos-pathSymbolPos-1);
+	string basename       = decodePara->inWavName.substr(pathSymbolPos + 1, dotpos - pathSymbolPos - 1);
 	string extension      = decodePara->inWavName.substr(dotpos + 1, decodePara->inWavName.length() - dotpos - 1);
 
 	//计算转码后语音名

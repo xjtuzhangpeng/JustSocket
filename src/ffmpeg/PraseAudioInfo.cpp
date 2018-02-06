@@ -108,7 +108,7 @@ StereoOnMode PraseAudioInfo::GetStereoOnMode()
     {
         return NOT_STEREO;
     }
-    return STEREO_ON_0;
+    return STEREO_ON_1;
 }
 
 int PraseAudioInfo::GetBits()

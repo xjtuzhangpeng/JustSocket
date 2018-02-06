@@ -5,11 +5,12 @@ SocketInfo::SocketInfo(short port
 #else
                        , size_t buf_len
 #endif
-                       )
+                       ) : 
 #ifdef _NODE_LINK_
 #else
-                       : m_buf_len(buf_len)
+                       m_buf_len(buf_len), 
 #endif
+                       m_thread_num(0)
 {
     std::thread thrd_server(std::bind(&SocketInfo::StartServer, this, port));
     thrd_server.detach();
@@ -28,13 +29,15 @@ size_t SocketInfo::GetFFmpegBuffLen(std::string &sessionId)
 
     if (m_task_map.find(sessionId) == m_task_map.end())
     {
+        LOG_PRINT_ERROR("sessionId:%s is not in map", sessionId.c_str());
         return len;
     }
 
     TaskInfo *task = m_task_map[sessionId];
     if (task == NULL)
     {
-        return len;
+        LOG_PRINT_ERROR("Task is null");
+        return 0; // 任务不存在
     }
 
     if (task->IsSocketClosed())

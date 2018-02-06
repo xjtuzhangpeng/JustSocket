@@ -155,7 +155,6 @@ void test_ffmepg()
     LOG_PRINT_FATAL("main start ... ");
 
     std::thread thrd_0(std::bind(task_thread, sid_head, 0));
-    std::thread thrd_0(std::bind(task_thread, sid_head, 0));
     std::thread thrd_1(std::bind(task_thread, sid_head, 1));
     std::thread thrd_2(std::bind(task_thread, sid_head, 2));
     std::thread thrd_3(std::bind(task_thread, sid_head, 3));
@@ -175,7 +174,7 @@ void test_ffmepg()
     thrd_6.join();
     thrd_7.join();
     thrd_8.join();
-    thrd_9.join();*/
+    thrd_9.join();
     LOG_PRINT_FATAL("main finish ... ");
 
 }
@@ -222,21 +221,31 @@ void TestCase_AudioFormat()
 void TestCase_Audio2Pcm()
 {
     Audio2Pcm   audio2Pcm(MAX_NUM_OF_THREAD);
-    std::string cmd = \
-        "sox -e oki-adpcm -b 4 -r 6k " PATH_HEAD "/vox/6k4bit_vox.vox -b 16 -r 8000 VOC_tmp.wav highpass 10";
-    audio2Pcm.CallCodecFunction(1, cmd);
+    DecodePara  para;
 
-    std::string session = "VOC_tmp.wav";
-    size_t  buf_len = GetSoxBufLen(session);
-    char   *buf     = new char[buf_len];
-    LOG_PRINT_DEBUG("%d, buf-len %d", buf_len, CopySoxBuf(session, buf, buf_len));
+    para.inWavName   = PATH_HEAD "/opus/111.wav";
+    para.outPath     = PATH_HEAD "/opus/";
+    para.channel     = CHANNEL_MONO;
+    para.trueFormat  = pcm_spec;
+    para.stereOnMode = STEREO_ON_1;
+    para.sessionId   = 1;
+
+    audio2Pcm.audio2pcm(&para);
+
+    char   *buf     = NULL;
+    size_t  buf_len = audio2Pcm.GetAudioBuf(para.sessionId, &buf);
+    if (buf_len == 0)
+    {
+        LOG_PRINT_DEBUG("buf is zero");
+        return;
+    }
+    LOG_PRINT_DEBUG("buf-len %d", buf_len);
 
     std::string sid = "VOC_tmp_1.wav";
     LOG_PRINT_DEBUG("FileName: %s", sid.c_str());
     FILE *fp = fopen(sid.c_str(), "w+");
     fwrite(buf, buf_len, 1, fp);
     fclose(fp);
-    delete buf;
     buf = NULL;
 }
 
@@ -247,13 +256,9 @@ int main(int agrs, char *argv[])
     std::string  sox_cmd     = SOX_VOX_1((tempWavName + ".pcm"), (tempWavName + ".wav"));
 
     LOG_PRINT_DEBUG("PCM_HEAD = %d", sizeof(PCM_HEAD));
-    LOG_PRINT_DEBUG("Cmd: %s", sox_cmd.c_str());
+    //LOG_PRINT_DEBUG("Cmd: %s", sox_cmd.c_str());
 
     //test_ffmepg();
-
-    //Audio2Pcm audio;
-    //audio.CallCodecFunction(sox_cmd);
-
     //TestCase_AudioFormat();
     TestCase_Audio2Pcm();
 

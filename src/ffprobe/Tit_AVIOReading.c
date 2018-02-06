@@ -106,7 +106,6 @@ PUBLIC void InitSessionNum(int sessionNum)
     if (g_AudioFormatInfo != NULL)
         free(g_AudioFormatInfo);
     g_AudioFormatInfo = malloc((sizeof(LINE_BUFF) * sessionNum));
-    LOG_PRINT_DEBUG_C("%p %p %p \n", g_AudioFormatInfo[0], g_AudioFormatInfo[1], g_AudioFormatInfo[2]);
 }
 
 PUBLIC int AVIOReading(char *filename, int sessionid)
@@ -159,13 +158,13 @@ PUBLIC int AVIOReading(char *filename, int sessionid)
 
     ret = avformat_open_input(&fmt_ctx, NULL, NULL, NULL);
     if (ret < 0) {
-        LOG_PRINT_ERROR_C("Could not open input");
+        LOG_PRINT_ERROR_C("Could not open input, %s", filename);
         goto end;
     }
 
     ret = avformat_find_stream_info(fmt_ctx, NULL);
     if (ret < 0) {
-        LOG_PRINT_ERROR_C("Could not find stream information");
+        LOG_PRINT_ERROR_C("Could not find stream information, %s", filename);
         goto end;
     }
 
