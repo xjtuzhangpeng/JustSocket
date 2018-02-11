@@ -113,6 +113,10 @@ static lsx_getopt_t optstate;
 
 static char const * myname = NULL;
 static enum {sox_sox, sox_play, sox_rec, sox_soxi} sox_mode;
+static void cleanup_argv() // add by - zhangpeng
+{
+    myname = NULL;
+}
 
 
 /* gopts */
@@ -134,6 +138,15 @@ static lsx_enum_item const rg_modes[] = {
   {0, 0}};
 static rg_mode replay_gain_mode = RG_default;
 static sox_option_t show_progress = sox_option_default;
+static void cleanup_gopts() // add by - zhangpeng
+{
+    output_method = sox_single;
+    no_clobber = sox_false;
+    interactive = sox_false;
+    uservolume = sox_false;
+    replay_gain_mode = RG_default;
+    show_progress = sox_option_default;
+}
 
 
 /* Input & output files */
@@ -160,6 +173,13 @@ static file_t * * files = NULL; /* Array tracking input and output files */
 static size_t file_count = 0;
 static size_t input_count = 0;
 static size_t output_count = 0;
+static void cleanup_files() // add by - zhangpeng
+{
+    files = NULL;
+    file_count = 0;
+    input_count = 0;
+    output_count = 0;
+}
 
 /* Effects */
 
@@ -188,6 +208,28 @@ static sox_bool very_first_effchain = sox_true;
 static char *effects_filename = NULL;
 static char * play_rate_arg = NULL;
 static char *norm_level = NULL;
+static void cleanup_Effects() // add by - zhangpeng
+{
+    user_efftab = NULL;
+    user_efftab_size = 0;
+    effects_chain = NULL;
+    save_output_eff = NULL;
+    
+    user_effargs = NULL;
+    user_effargs_size = NULL;  /* array: size of user_effargs for each chain */
+    /* Size of memory structures related to effects arguments (user_effargs[i],
+     * user_effargs[i][j].argv) to be extended in steps of EFFARGS_STEP */
+    nuser_effects = NULL;  /* array: number of effects in each chain */
+    current_eff_chain = 0;
+    eff_chain_count = 0;
+    very_first_effchain = sox_true;
+    /* Indicates that not only the first effects chain is in effect (hrm), but
+       also that it has never been restarted. Only then we may use the
+       optimize_trim() hack. */
+    effects_filename = NULL;
+    play_rate_arg = NULL;
+    norm_level = NULL;
+}
 
 /* Flowing */
 
@@ -206,6 +248,21 @@ static sox_bool user_restart_eff = sox_false;
 static int success = 0;
 static int cleanup_called = 0;
 static sox_sample_t omax[2], omin[2];
+static void cleanup_Flowing() // add by - zhangpeng
+{
+    mixing_clips = 0;
+    current_input = 0;
+    input_wide_samples = 0;
+    read_wide_samples = 0;
+    output_samples = 0;
+    input_eof = sox_false;
+    output_eof = sox_false;
+    user_abort = sox_false;
+    user_skip = sox_false;
+    user_restart_eff = sox_false;
+    success = 0;
+    cleanup_called = 0;
+}
 
 #ifdef HAVE_TERMIOS_H
 #include <termios.h>
@@ -232,7 +289,9 @@ static void cleanup(void)
       sox_close(files[i]->ft);
     }
     free(files[i]->filename);
+    files[i]->filename = NULL;
     free(files[i]);
+    files[i] = NULL;
   }
 
   if (file_count) {
@@ -246,10 +305,16 @@ static void cleanup(void)
       sox_close(ofile->ft); /* Assume we can unlink a file before closing it. */
     }
     free(ofile->filename);
+    ofile->filename = NULL;
     free(ofile);
+    ofile = NULL;
   }
 
   free(files);
+  files = NULL;
+  file_count = 0; // modify by - zhangpeng
+  current_input = 0;
+  output_count = 0;
 
 #ifdef HAVE_TERMIOS_H
   if (original_termios_saved)
@@ -262,10 +327,19 @@ static void cleanup(void)
   sox_globals.tmp_path = NULL;
 
   free(play_rate_arg);
+  play_rate_arg = NULL;
   free(effects_filename);
+  effects_filename = NULL;
   free(norm_level);
+  norm_level = NULL;
 
   sox_quit();
+
+  cleanup_argv();
+  cleanup_gopts();
+  cleanup_files();
+  cleanup_Effects();
+  cleanup_Flowing();
 
   cleanup_called = 1;
 }
@@ -2848,7 +2922,7 @@ static sox_bool cmp_comment_text(char const * c1, char const * c2)
   return c1 && c2 && !strcasecmp(c1, c2);
 }
 
-int main(int argc, char **argv)
+int SOX_main(int argc, char **argv)
 {
   size_t i;
   char mybase[6];
@@ -2872,7 +2946,7 @@ int main(int argc, char **argv)
     --argc, ++argv, sox_mode = sox_soxi;
 
   if (sox_init() != SOX_SUCCESS)
-    exit(1);
+    goto CLEANUP; //exit(1);
 
   stdin_is_a_tty = isatty(fileno(stdin));
   errno = 0; /* Both isatty & fileno may set errno. */
@@ -2880,7 +2954,7 @@ int main(int argc, char **argv)
   atexit(atexit_cleanup);
 
   if (sox_mode == sox_soxi)
-    exit(soxi(argc, argv));
+    return soxi(argc, argv); // exit(soxi(argc, argv));
 
   parse_options_and_filenames(argc, argv);
 
@@ -2946,7 +3020,7 @@ int main(int argc, char **argv)
     if (!files[j]->ft)
       /* sox_open_read() will call lsx_warn for most errors.
        * Rely on that printing something. */
-      exit(2);
+      goto CLEANUP; //exit(2);
     if (show_progress == sox_option_default &&
         (files[j]->ft->handler.flags & SOX_FILE_DEVICE) != 0 &&
         (files[j]->ft->handler.flags & SOX_FILE_PHONY) == 0)
@@ -2982,7 +3056,7 @@ int main(int argc, char **argv)
       ofile->filetype && !strcmp(ofile->filetype, "null")) {
     for (i = 0; i < input_count; i++)
       report_file_info(files[i]);
-    exit(0);
+    goto CLEANUP; //exit(0);
   }
 
   if (!sox_globals.repeatable) {/* Re-seed PRNG? */
@@ -3046,7 +3120,7 @@ int main(int argc, char **argv)
   }
 
   success = 1; /* Signal success to cleanup so the output file isn't removed. */
-
+CLEANUP:
   cleanup();
 
   return 0;

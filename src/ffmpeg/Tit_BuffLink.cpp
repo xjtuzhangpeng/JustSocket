@@ -200,7 +200,7 @@ extern "C" {
 
         memcpy(node->buff, buf, len);
         node->offset = len;
-        LOG_PRINT_WARN("%s ----- %lu", filename, len);
+        //LOG_PRINT_INFO("%s ----- %lu", filename, len);
 
         return len;
     }
@@ -210,16 +210,19 @@ extern "C" {
 
 bool StoreTitBuff(std::string filename, char *buf, size_t len)
 {
-    if (len == 0)
+    if (filename.empty() || len == 0)
     {
+        LOG_PRINT_ERROR("filename: %s, len %lu", filename.c_str(), len);
         return false;
     }
 
     if (g_SoxFileMap.find(filename) != g_SoxFileMap.end())
     {
         TIT_FILE * file = g_SoxFileMap[filename];
-        delete file->buf;
-        file->buf = NULL;
+        //delete file->buf; // no need delete, delete by Audio2pcm;
+        //file->buf = NULL;
+        delete file;
+		file = NULL;
         g_SoxFileMap.erase(g_SoxFileMap.find(filename));
     }
 

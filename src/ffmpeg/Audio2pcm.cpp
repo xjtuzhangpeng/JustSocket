@@ -29,9 +29,14 @@ void Audio2Pcm::ReadInWavToAudioBuf(int sessionId)
     AudioBuf   *AuBufPtr   = m_audioBuf[sessionId];
     DecodePara *decodePara = AuBufPtr->para;
 
-    //将文件内容读入到输出(临时)buf             - zhangpeng
-    FILE *fd = fopen(decodePara->inWavName.c_str(), "r");
-    AuBufPtr->buf_out_size = fread(AuBufPtr->buf_out, size_t(10000), 1, fd);
+    ifstream wavfile(decodePara->inWavName, ios::in|ios::binary|ios::ate);
+    AuBufPtr->buf_out_size = wavfile.tellg();
+    wavfile.seekg(0, ios::beg);
+    AuBufPtr->buf_out = new char[AuBufPtr->buf_out_size];
+
+    wavfile.read(AuBufPtr->buf_out, AuBufPtr->buf_out_size);
+    wavfile.close();
+    LOG_PRINT_INFO("wav:%s, size:%lu", decodePara->inWavName.c_str(), AuBufPtr->buf_out_size);
     return;
 }
 
@@ -50,12 +55,39 @@ void Audio2Pcm::ParseAudioFormatInfo(int sessionId)
     }
 
     PraseAudioInfo audioInfo(info);
-    // todo: 优先按照客户的设置来处理
-    decodePara->trueFormat  = audioInfo.GetAudioType();
-    decodePara->channel     = audioInfo.GetChannelNum();
-    decodePara->stereOnMode = audioInfo.GetStereoOnMode();
+
+    if (sum == decodePara->trueFormat)
+    {
+        decodePara->trueFormat = audioInfo.GetAudioType();
+    }
+
+    if (CHANNEL_UNKNOW == decodePara->channel)
+    {
+        decodePara->channel = audioInfo.GetChannelNum();
+    }
+
+    if (NOT_STEREO != decodePara->stereOnMode)
+    {
+        decodePara->stereOnMode = audioInfo.GetStereoOnMode();
+    }
+    LOG_PRINT_INFO(":: %d, %d, %d", decodePara->trueFormat, decodePara->channel, decodePara->stereOnMode);
 }
 
+/*************************************************************
+* PRIVATE 将上一次的输入buf释放，并将输出当作本次的输入
+**************************************************************/
+void Audio2Pcm::ExchangeBufOut2In(int sessionId)
+{
+    AudioBuf *AuBufPtr = m_audioBuf[sessionId];
+
+    delete AuBufPtr->buf_in;
+    AuBufPtr->buf_in      = AuBufPtr->buf_out;
+    AuBufPtr->buf_in_size = AuBufPtr->buf_out_size;
+
+    AuBufPtr->buf_out = NULL;
+    AuBufPtr->buf_out_size = 0;
+    return;
+}
 
 /*************************************************************
 * 设置Sox的输入buf, sox编解码时读取对应的buf
@@ -70,11 +102,17 @@ void Audio2Pcm::HandleVoiceType_pcm(int sessionId)
     AudioBuf    *AuBufPtr   = m_audioBuf[sessionId];
     DecodePara  *decodePara = AuBufPtr->para;
 
+    AuBufPtr->buf_out_size = size_t(10000); //filelength(fileno(fd));
+    AuBufPtr->buf_out      = new char[AuBufPtr->buf_out_size];
+    ReadInWavToAudioBuf(sessionId);
+
 	//128kbps的pcm 
 	if(decodePara->channel == CHANNEL_MONO)   
 	{
-		 //pcm单声道语音重命名
-		string command("cp \"");
+        LOG_PRINT_DEBUG("wav:%s, size:%lu", decodePara->inWavName.c_str(), AuBufPtr->buf_out_size);
+        return;
+        //pcm单声道语音重命名
+        string command("cp \"");
 		command+=decodePara->inWavName+"\" \""+AuBufPtr->outWavName+"\"";
 		system(command.c_str());
 	}
@@ -124,9 +162,9 @@ void Audio2Pcm::HandleVoiceType_pcm_spec(int sessionId)
     if(decodePara->channel == CHANNEL_MONO)   
     {
         //resample:pcm_spec->pcm
-        string command("./resample -to 8000 \"");
-        command+=decodePara->inWavName+"\"  \""+AuBufPtr->outWavName+"\"";
-        system(command.c_str());
+        string command(FFMEPG_MML_HEAD " -i \"");
+        command+=decodePara->inWavName+"\" -ar 8000 -f wav \""+AuBufPtr->outWavName+"\"";
+        CallCodecFunction(sessionId, command);
     }
     else if(decodePara->channel == CHANNEL_STEREO)
     {   
@@ -150,8 +188,8 @@ void Audio2Pcm::HandleVoiceType_pcm_spec(int sessionId)
             CallCodecFunction(sessionId, command1);
             
             //resample:pcm_spec->pcm---left
-            string command2("./resample -to 8000 \"");
-            command2+=tempLeft+"\"  \""+AuBufPtr->outWavName_left+"\"";
+            string command2(FFMEPG_MML_HEAD " -i \"");
+            command2+=tempLeft+"\" -ar 8000 -f wav \""+AuBufPtr->outWavName_left+"\"";
             system(command2.c_str());
             
             //sox:pcm_spec->pcm---right
@@ -162,8 +200,8 @@ void Audio2Pcm::HandleVoiceType_pcm_spec(int sessionId)
             CallCodecFunction(sessionId, command3);
             
             //resample:pcm_spec->pcm---right
-            string command4("./resample -to 8000 \"");
-            command4+=tempright+"\"  \""+AuBufPtr->outWavName_right+"\"";
+            string command4(FFMEPG_MML_HEAD " -i \"");
+            command4+=tempright+"\" -ar 8000 -f wav \""+AuBufPtr->outWavName_right+"\"";
             system(command4.c_str());
             
             //删掉转码中间语音文件
@@ -186,8 +224,8 @@ void Audio2Pcm::HandleVoiceType_pcm_spec(int sessionId)
             CallCodecFunction(sessionId, command1);
             
             //resample:pcm_spec->pcm---mix
-            string command2("./resample -to 8000 \"");
-            command2+=temp+"\"  \""+AuBufPtr->outWavName+"\"";
+            string command2(FFMEPG_MML_HEAD " -i \"");
+            command2+=temp+"\" -ar 8000 -f wav \""+AuBufPtr->outWavName+"\"";
             system(command2.c_str());
             
             //删掉转码中间语音文件
@@ -210,8 +248,8 @@ void Audio2Pcm::HandleVoiceType_pcm_spec(int sessionId)
             CallCodecFunction(sessionId, command1);
             
             //resample:pcm_spec->pcm---ethier
-            string command2("./resample -to 8000 \"");
-            command2+=temp+"\"  \""+AuBufPtr->outWavName+"\"";
+            string command2(FFMEPG_MML_HEAD " -i \"");
+            command2+=temp+"\" -ar 8000 -f wav \""+AuBufPtr->outWavName+"\"";
             system(command2.c_str());
             
             //删掉转码中间语音文件
@@ -328,11 +366,11 @@ void Audio2Pcm::HandleVoiceType_alaw_raw(int sessionId)
     DecodePara  *decodePara = AuBufPtr->para;
 
     //没头的alaw，from李征
-    if(decodePara->channel == CHANNEL_MONO)   
+    if(decodePara->channel == CHANNEL_MONO)
     {
         //AudioCode:alaw_raw->pcm
         string command("./AudioCode  -i a -o l -if \"");
-        command+=decodePara->inWavName+"\"  -of \""+AuBufPtr->outWavName+"\"";
+        command += decodePara->inWavName + "\"  -of \"" + AuBufPtr->outWavName + "\"";
         system(command.c_str());
     }
     else if(decodePara->channel == CHANNEL_STEREO)
@@ -352,7 +390,7 @@ void Audio2Pcm::HandleVoiceType_acm_or_voc(int sessionId)
     ReadInWavToAudioBuf(sessionId);
 
     //adpcm或者标准的voc
-    if(decodePara->channel == CHANNEL_MONO)   
+    if(decodePara->channel == CHANNEL_MONO)
     {
         //sox:acm/voc->pcm
         // string command("sox \"");

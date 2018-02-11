@@ -25,6 +25,7 @@ TaskInfo::~TaskInfo()
 #ifdef _NODE_LINK_
 #else
     delete m_buff;
+    m_buff = NULL;
 #endif
 }
 

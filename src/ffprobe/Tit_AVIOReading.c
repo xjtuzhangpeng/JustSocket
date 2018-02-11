@@ -169,7 +169,7 @@ PUBLIC int AVIOReading(char *filename, int sessionid)
     }
 
     av_dump_format(fmt_ctx, SESSION_TO_INDEX(sessionid), input_filename, 0); // 获取文件的格式 - zhangpeng
-    PrintfInfo(sessionid);
+    //PrintfInfo(sessionid);
 
 end:
     avformat_close_input(&fmt_ctx);

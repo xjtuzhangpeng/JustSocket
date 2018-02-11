@@ -31,10 +31,12 @@ TIT_Map<std::string, VoiceType>  g_AduioType;
 
 void InitAudioTypeMap()
 {
-    std::pair<std::string, VoiceType> tmp(AUDIO_TYPE_PCM_MULAW, acm);
-    g_AduioType.insert(tmp);
+    std::pair<std::string, VoiceType> tmp_acm(AUDIO_TYPE_PCM_MULAW, acm);
+    g_AduioType.insert(tmp_acm);
     std::pair<std::string, VoiceType> tmp_mp3(AUDIO_TYPE_MP3, mp3);
     g_AduioType.insert(tmp_mp3); // mp3_8k
+    std::pair<std::string, VoiceType> tmp_pcm_spec_1(AUDIO_TYPE_PCM_U8, pcm_spec);
+    g_AduioType.insert(tmp_pcm_spec_1);
 }
 
 PraseAudioInfo::PraseAudioInfo(std::string info) : m_info(info)
@@ -104,10 +106,6 @@ ChannelNum PraseAudioInfo::GetChannelNum()
 
 StereoOnMode PraseAudioInfo::GetStereoOnMode()
 {
-    if (GetChannelNum() != CHANNEL_STEREO)
-    {
-        return NOT_STEREO;
-    }
     return STEREO_ON_1;
 }
 
