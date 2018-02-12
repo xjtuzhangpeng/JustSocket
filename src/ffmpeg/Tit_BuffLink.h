@@ -61,10 +61,6 @@ private:
     BuffNode     *head;
     BuffNode     *tail;
 };
-
-bool   StoreTitBuff(std::string filename, char *buf, size_t len);
-size_t GetSoxBufLen(std::string filename);
-size_t CopySoxBuf(std::string filename, char *buff, size_t len);
 #endif
 
 #endif//_TIT_BUFF_LINK_H_

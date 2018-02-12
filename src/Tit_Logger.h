@@ -51,19 +51,12 @@ extern LOGGER G_Log;
 #define  LOG_PRINT_FATAL(fmt, ...)   \
     do { G_Log.LogPrint(TIT_LOG_FATAL, fmt" (%s:%d)", ##__VA_ARGS__, __FILE__, __LINE__); } while(0)
 #else
-#if 0
+#define  LOG_PRINT_TRACE(fmt, ...)   printf(fmt"(%s:%d)\n", ##__VA_ARGS__,__FILE__,__LINE__)
 #define  LOG_PRINT_DEBUG(fmt, ...)   printf(fmt"(%s:%d)\n", ##__VA_ARGS__,__FILE__,__LINE__)
 #define  LOG_PRINT_INFO(fmt, ...)    printf(fmt"(%s:%d)\n", ##__VA_ARGS__,__FILE__,__LINE__)
 #define  LOG_PRINT_WARN(fmt, ...)    printf(fmt"(%s:%d)\n", ##__VA_ARGS__,__FILE__,__LINE__)
 #define  LOG_PRINT_ERROR(fmt, ...)   printf(fmt"(%s:%d)\n", ##__VA_ARGS__,__FILE__,__LINE__)
-#else
-#define  LOG_PRINT_DEBUG(fmt, ...)   
-#define  LOG_PRINT_INFO(fmt, ...)    
-#define  LOG_PRINT_WARN(fmt, ...)    
-#define  LOG_PRINT_ERROR(fmt, ...)   
-#define  LOG_PRINT_FATAL(fmt, ...)   \
-    do { G_Log.LogPrint(TIT_LOG_FATAL, fmt" (%s:%d)", ##__VA_ARGS__, __FILE__, __LINE__); } while(0)
-#endif
+#define  LOG_PRINT_FATAL(fmt, ...)   printf(fmt"(%s:%d)\n", ##__VA_ARGS__,__FILE__,__LINE__)
 #endif
 
 #endif//_TIT_LOGGER_H_

@@ -1,5 +1,5 @@
 
 SOX_DIR      = sox
-SOX_SOURCES  = 
+SOX_SOURCES  = $(SOX_DIR)/Tit_SoxBuf.cpp
 
 SOX_CSOURCES = $(SOX_DIR)/sox.c

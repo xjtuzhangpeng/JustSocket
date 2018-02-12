@@ -762,7 +762,13 @@ void Audio2Pcm::CallCodecFunction(int sessionId, string &cmd)
         LOG_PRINT_DEBUG("AuBufPtr->buf_out_size %lu", AuBufPtr->buf_out_size);
         AuBufPtr->buf_out = new char[AuBufPtr->buf_out_size];
         m_audioSocket->GetFFmpegBuff(sid, AuBufPtr->buf_out, AuBufPtr->buf_out_size);
-        *(unsigned int *)(AuBufPtr->buf_out + 4) = AuBufPtr->buf_out_size - 8;
+        PPCM_HEAD hdr  = reinterpret_cast<PPCM_HEAD> (AuBufPtr->buf_out);
+        hdr->ChunkSize = AuBufPtr->buf_out_size - 8;
+        hdr->DataLen   = AuBufPtr->buf_out_size - 78;
+        //memmove(hdr->INFO, &hdr->DataTag, AuBufPtr->buf_out_size - 70);
+        //memmove(&hdr->INFO[30], &hdr->INFO[34], AuBufPtr->buf_out_size - 36 - 30);
+        //AuBufPtr->buf_out_size -= 4;
+        LOG_PRINT_INFO("ChunkSize %d, DataTag %x DataLen %d", hdr->ChunkSize, hdr->DataTag, hdr->DataLen);
     }
     else
     {
