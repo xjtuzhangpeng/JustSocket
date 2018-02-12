@@ -28,7 +28,7 @@ typedef struct
     uint32 ByteRate;            //1CH 4 long int 波形音频数据传送速率，其值Channels×SamplesPerSec×BitsPerSample/8  
     uint16 BlockAlign;          //20H 2 int 数据块的调整数（按字节算的），其值为Channels×BitsPerSample/8  
     uint16 BitsPerSample;       //22H 2 每样本的数据位数，表示每个声道中各个样本的数据位数。如果有多个声道，对每个声道而言，样本大小都一样。  
-    uint8  INFO[34];            //24H 34 char 描述信息
+    uint8  INFO[34];            //24H 34 char 描述信息  
     uint32 DataTag;             //46H 4 char 数据标记符＂data＂  
     uint32 DataLen;             //4AH 4 long int 语音数据的长度(文长-44)  
 } __attribute__((packed)) PCM_HEAD, *PPCM_HEAD;
@@ -60,17 +60,17 @@ typedef struct
 enum VoiceType
 {
 	sum=0,
-	pcm,                 //128kbps的pcm: 8k_16bit_PCM
-	pcm_spec,            //采样率为非8k的pcm: 6k_16bit_PCM
-	vox,                 //6k_4bit的vox: 6k_4bit_Vox
-	alaw,                //带头的alaw: 8k_8bit_Alaw
-	alaw_raw,            //没头的alaw
-	acm,                 //adpcm:8k_8bit_Alaw, 8k_8bit_Ulaw, 8k_8bit_PCM, 8k_16bit_13kbps_GSM 6.10, 8k_16bit_32kbps_ima-adpcm, 8k_16bit_32kbps_ms-adpcm, 
-	voc,                 //标准的voc
-	mp3,                 //MP3语音: 44100Hz_16bit_128kbps_mp3
-	mp3_8k,              //8k_16bit_32kbps_mp3, 8k_16bit_8kbps_mp3
-	raw,                 //没头的128kbps的pcm
-	ffmpeg_8kbps,        //其他的可以用ffmpeg统一解码的压缩语音(对应徐晓艳8kbps): 8kbps,63kbps,16kbps
+	pcm=1,                 //128kbps的pcm: 8k_16bit_PCM
+	pcm_spec=2,            //采样率为非8k的pcm: 6k_16bit_PCM
+	vox=3,                 //6k_4bit的vox: 6k_4bit_Vox
+	alaw=4,                //带头的alaw: 8k_8bit_Alaw
+	alaw_raw=5,            //没头的alaw
+	acm=6,                 //adpcm:8k_8bit_Alaw, 8k_8bit_Ulaw, 8k_8bit_PCM, 8k_16bit_13kbps_GSM 6.10, 8k_16bit_32kbps_ima-adpcm, 8k_16bit_32kbps_ms-adpcm, 
+	voc=7,                 //标准的voc
+	mp3=8,                 //MP3语音: 44100Hz_16bit_128kbps_mp3
+	mp3_8k=9,              //8k_16bit_32kbps_mp3, 8k_16bit_8kbps_mp3
+	raw=10,                //没头的128kbps的pcm
+	ffmpeg_8kbps=11,       //其他的可以用ffmpeg统一解码的压缩语音(对应徐晓艳8kbps): 8kbps,63kbps,16kbps
 };
 
 //语音声道数

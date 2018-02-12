@@ -41,34 +41,12 @@ void BuffLink::Add()
     }
 }
 
-void BuffLink::Add(size_t buf_len)
-{
-    BuffNode *tmp = new BuffNode(buf_len);
-    //LOG_PRINT_INFO("new one buff link:%p", tmp);
-    if (tail == NULL)
-    {
-        tail = head = tmp;
-    }
-    else
-    {
-        tail->next = tmp;
-        tail       = tmp;
-    }
-}
-
 BuffNode * BuffLink::GetTail()
 {
     if (NULL == tail || BUFF_NODE_LEN == tail->offset)
     {
         Add();
     }
-    return tail;
-}
-
-
-BuffNode * BuffLink::GetTail(size_t buf_len)
-{
-    Add(buf_len);
     return tail;
 }
 

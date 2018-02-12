@@ -3,6 +3,7 @@
  ********************************************************************************/
 #include "Tit_SoxBuf.h"
 #include "Tit_Logger.h"
+#include "Tit_Map.h"
 
 static TIT_Map<std::string, TIT_FILE *> g_SoxBufMap;
 static TIT_Map<std::string, TIT_FILE *> g_SoxFileMap;

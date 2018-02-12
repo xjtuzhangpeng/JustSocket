@@ -2,7 +2,6 @@
 #define _TIT_SOX_BUF_H_
 #include <string>
 
-#include "Tit_Map.h"
 typedef struct TIT_FILE
 {
     char     *buf;

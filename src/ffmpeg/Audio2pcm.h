@@ -14,6 +14,7 @@
 #include "Tit_SocketInfo.h"
 #include "Tit_AVIOReading.h"
 #include "PraseAudioInfo.h"
+#include "Tit_SoxBuf.h"
 
 using namespace std;
 

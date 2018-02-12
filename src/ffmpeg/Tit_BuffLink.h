@@ -53,10 +53,8 @@ public:
     void   UpdateBuffLen(size_t diff);
     
     BuffNode * GetTail();
-    BuffNode * GetTail(size_t buf_len);
 private:
     void Add();
-    void Add(size_t buf_len);
 
     BuffNode     *head;
     BuffNode     *tail;
