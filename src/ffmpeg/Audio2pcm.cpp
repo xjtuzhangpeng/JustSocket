@@ -53,6 +53,7 @@ void Audio2Pcm::ParseAudioFormatInfo(int sessionId)
         LOG_PRINT_ERROR("Audio info is empty");
         return;
     }
+    LOG_PRINT_DEBUG("Audio info: %s", info.c_str());
 
     PraseAudioInfo audioInfo(info);
 
@@ -84,7 +85,7 @@ void Audio2Pcm::ExchangeBufOut2In(int sessionId)
     AuBufPtr->buf_in      = AuBufPtr->buf_out;
     AuBufPtr->buf_in_size = AuBufPtr->buf_out_size;
 
-    AuBufPtr->buf_out = NULL;
+    AuBufPtr->buf_out      = NULL;
     AuBufPtr->buf_out_size = 0;
     return;
 }
@@ -318,7 +319,7 @@ void Audio2Pcm::HandleVoiceType_alaw(int sessionId)
 		// string command("sox -e a-law -b 8 -r 8k \"");
 		// command+=inWavName+"\" -b 16 -r 8000 \""+outWavName+"\"";
 		string command(SOX_MML_HEAD " -e a-law -b 8 -r 8k ");
-		command+=decodePara->inWavName+" -b 16 -r 8000 "+AuBufPtr->outWavName;
+		command += SOX_TMP_INPUT + " -b 16 -r 8000 "+ SOX_TMP_OUTPUT;
 		CallCodecFunction(sessionId, command);
 	}
 	else if(decodePara->channel == CHANNEL_STEREO)
@@ -345,7 +346,7 @@ void Audio2Pcm::HandleVoiceType_alaw(int sessionId)
 			// string command("sox \"");
 			// command+=inWavName+"\" -b 16 -r 8000 -c 1 \""+outWavName+"\"";
 			string command(SOX_MML_HEAD);
-			command+=decodePara->inWavName+" -b 16 -r 8000 -c 1 "+AuBufPtr->outWavName;
+			command += SOX_TMP_INPUT + " -b 16 -r 8000 -c 1 " + SOX_TMP_OUTPUT;
 			CallCodecFunction(sessionId, command);
 		}
 		if(decodePara->stereOnMode == STEREO_ON_4)
@@ -393,10 +394,8 @@ void Audio2Pcm::HandleVoiceType_acm_or_voc(int sessionId)
     if(decodePara->channel == CHANNEL_MONO)
     {
         //sox:acm/voc->pcm
-        // string command("sox \"");
-        // command+=inWavName+"\" -b 16 -r 8000 \""+outWavName+"\"";
 		string command(SOX_MML_HEAD);
-        command+=decodePara->inWavName+" -b 16 -r 8000 "+AuBufPtr->outWavName;
+        command += decodePara->inWavName + " -b 16 -r 8000 " + SOX_TMP_OUTPUT;
         CallCodecFunction(sessionId, command);
     }
     else if(decodePara->channel == CHANNEL_STEREO)
@@ -423,7 +422,7 @@ void Audio2Pcm::HandleVoiceType_acm_or_voc(int sessionId)
             //string command("sox \"");
             //command+=inWavName+"\" -b 16 -r 8000 -c 1 \""+outWavName+"\"";
 			string command(SOX_MML_HEAD);
-            command+=decodePara->inWavName+" -b 16 -r 8000 -c 1 "+AuBufPtr->outWavName;
+            command += decodePara->inWavName + " -b 16 -r 8000 -c 1 "+ SOX_TMP_OUTPUT;
             CallCodecFunction(sessionId, command);
         }
         if(decodePara->stereOnMode == STEREO_ON_4)
@@ -449,29 +448,16 @@ void Audio2Pcm::HandleVoiceType_mp3_or_8k(int sessionId)
     //MP3语音
     if(decodePara->channel == CHANNEL_MONO)   
     {
-        string tempWavName=AuBufPtr->outWavName;
-        size_t dotpos=tempWavName.rfind(".");
-        int replaceLen=tempWavName.length()-dotpos;
-        tempWavName.replace(dotpos,replaceLen,".pcm");
-        
         //ffmpeg:mp3->pcm
-        //string command1("ffmpeg  -i \"");
-        //command1+=inWavName+"\" -f wav \""+tempWavName+"\"";
 		string command1(FFMEPG_MML_HEAD " -i ");
-        command1+=decodePara->inWavName+" -f wav "+tempWavName;
+        command1 += decodePara->inWavName + FFMPEG_CONF_RESAMPLE + \
+                    FFMPEG_CONF_BITRATE   + FFMPEG_CONG_FORMAT   + FFMPEG_TMP_OUTPUT;
         CallCodecFunction(sessionId, command1);
         
         //sox:pcm->pcm_128
-        //string command2("sox \"");
-        //command2+=tempWavName+"\" -b 16 -r 8000 \""+outWavName+"\"";
 		string command2(SOX_MML_HEAD);
-        command2+=tempWavName+" -b 16 -r 8000 "+AuBufPtr->outWavName;
+        command2 += SOX_TMP_INPUT + " -b 16 -r 8000 " + SOX_TMP_OUTPUT;
         CallCodecFunction(sessionId, command2);
-
-        //删掉转码中间语音文件
-        string command3("rm -f \"");
-        command3+=tempWavName+"\"";
-        system(command3.c_str());           
     }
     else if(decodePara->channel == CHANNEL_STEREO)                   
     {
@@ -481,10 +467,8 @@ void Audio2Pcm::HandleVoiceType_mp3_or_8k(int sessionId)
         tempWavName.replace(dotpos,replaceLen,".pcm");
     
         //ffmpeg:mp3->pcm
-        //string command1("ffmpeg  -i \"");
-        //command1+=inWavName+"\" -f wav \""+tempWavName+"\"";
 		string command1(FFMEPG_MML_HEAD " -i ");
-        command1+=decodePara->inWavName+" -f wav "+tempWavName;
+        command1 += decodePara->inWavName + " -f wav " + tempWavName;
         CallCodecFunction(sessionId, command1);
             
         if(decodePara->stereOnMode == STEREO_ON_2 || decodePara->stereOnMode == STEREO_ON_3)
@@ -509,7 +493,7 @@ void Audio2Pcm::HandleVoiceType_mp3_or_8k(int sessionId)
             //string command("sox \"");
             //command+=tempWavName+"\" -b 16 -r 8000 -c 1 \""+outWavName+"\"";
 			string command(SOX_MML_HEAD);
-            command+=tempWavName+" -b 16 -r 8000 -c 1 "+AuBufPtr->outWavName;
+            command += SOX_TMP_INPUT + " -b 16 -r 8000 -c 1 " + SOX_TMP_OUTPUT;
             CallCodecFunction(sessionId, command);
         }
         if(decodePara->stereOnMode == STEREO_ON_4)
@@ -537,7 +521,7 @@ void Audio2Pcm::HandleVoiceType_raw(int sessionId)
     DecodePara  *decodePara = AuBufPtr->para;
 
     //没头的128kbps的pcm
-    if(decodePara->channel == CHANNEL_MONO)   
+    if(decodePara->channel == CHANNEL_MONO)
     {
         //add_header:raw->pcm
         string command("./add_header \"");
@@ -597,20 +581,13 @@ void Audio2Pcm::HandleVoiceType_ffmpeg_8kbps(int sessionId)
         //string command1("ffmpeg  -i \"");
         //command1+=inWavName+"\" -vn -ar 8000 -ac 1 -ab 128 -f wav \""+tempWavName+"\"";
 		string command1(FFMEPG_MML_HEAD " -i ");
-        command1+=decodePara->inWavName+" -vn -ar 8000 -ac 1 -ab 128 -f wav "+tempWavName;
+        command1 += decodePara->inWavName + " -vn -ar 8000 -ac 1 -ab 128k -f wav " + tempWavName;
         CallCodecFunction(sessionId, command1);
         
         //sox:pcm->pcm_44
-        //string command2("sox \"");
-        //command2+=tempWavName+"\" -b 16 -r 8000 \""+outWavName+"\"";
 		string command2(SOX_MML_HEAD);
-        command2+=tempWavName+" -b 16 -r 8000 "+AuBufPtr->outWavName;
+        command2 += SOX_TMP_INPUT + " -b 16 -r 8000 " + SOX_TMP_OUTPUT;
         CallCodecFunction(sessionId, command2);
-        
-        //删掉转码中间语音文件
-        string command3("rm -f \"");
-        command3+=tempWavName+"\"";
-        system(command3.c_str());
     }
     else if(decodePara->channel == CHANNEL_STEREO)
     {
@@ -665,7 +642,7 @@ void Audio2Pcm::HandleVoiceType_ffmpeg_8kbps(int sessionId)
             //string command2("sox \"");
             //command2+=tempWavName+"\" -b 16 -r 8000 \""+outWavName+"\"";
 			string command2(SOX_MML_HEAD);
-            command2+=tempWavName+" -b 16 -r 8000 "+AuBufPtr->outWavName;
+            command2 += SOX_TMP_INPUT + " -b 16 -r 8000 " + SOX_TMP_OUTPUT;
             CallCodecFunction(sessionId, command2);
             
             //删掉转码中间语音文件
@@ -704,28 +681,14 @@ void Audio2Pcm::HandleVoiceType_ffmpeg_8kbps(int sessionId)
 }
 
 /*************************************************************
-* PRIVATE 将上一次的输入buf释放，并将输出当作本次的输入
-**************************************************************/
-void Audio2Pcm::ExchangeBufOut2In(int sessionId)
-{
-    AudioBuf *AuBufPtr = m_audioBuf[sessionId];
-
-    delete AuBufPtr->buf_in;
-    AuBufPtr->buf_in      = AuBufPtr->buf_out;
-    AuBufPtr->buf_in_size = AuBufPtr->buf_out_size;
-
-    AuBufPtr->buf_out = NULL;
-    AuBufPtr->buf_out_size = 0;
-    return;
-}
-
-/*************************************************************
 * PRIVATE 调用编码器对输入的语音进行转码，并获取输出的结果
 **************************************************************/
 void Audio2Pcm::CallCodecFunction(int sessionId, string &cmd)
 {
     AudioBuf    *AuBufPtr   = m_audioBuf[sessionId];
     DecodePara  *decodePara = AuBufPtr->para;
+
+    LOG_PRINT_DEBUG("CMD: %s", cmd.c_str());
 
     std::vector<std::string> vct;
     SplitString(cmd, vct, " ");
@@ -742,6 +705,25 @@ void Audio2Pcm::CallCodecFunction(int sessionId, string &cmd)
 
     if ("sox" == vct[0])
     {
+        std::string filename  = "";
+        decodePara->inWavName = "";
+        // 从命令行中查找输出的文件名 
+        for (size_t i = 0; i < vct.size(); i++)
+        {
+            if (decodePara->inWavName.empty() && 
+                vct[i].find_first_of(".") != std::string::npos)
+            {
+                decodePara->inWavName = vct[i];
+            }
+            else if (filename.empty() && 
+                     vct[i].find_first_of(".") != std::string::npos)
+            {
+                filename = vct[i];
+                break;
+            }
+        }
+        LOG_PRINT_DEBUG("in:%s, out:%s", decodePara->inWavName.c_str(), filename.c_str());
+
         //将上次的输出作为本次的输入
         ExchangeBufOut2In(sessionId);
         SendBufToSox(AuBufPtr, decodePara);
@@ -749,16 +731,6 @@ void Audio2Pcm::CallCodecFunction(int sessionId, string &cmd)
         //开始使用 sox 对语音进行编解码
         SOX_main(vct.size(), argv);
 
-        std::string filename = "";
-        // 从命令行中查找输出的文件名 
-        for (size_t i = vct.size(); i > 0; i--)
-        {
-            if (vct[i-1].find_first_of(".") != std::string::npos)
-            {
-                filename = vct[i-1];
-                break;
-            }
-        }
         //获取编解码器输出的语音
         AuBufPtr->buf_out_size = GetSoxBufLen(filename);
         AuBufPtr->buf_out      = new char[AuBufPtr->buf_out_size];
@@ -788,8 +760,9 @@ void Audio2Pcm::CallCodecFunction(int sessionId, string &cmd)
             usleep(100);
         }
         LOG_PRINT_DEBUG("AuBufPtr->buf_out_size %lu", AuBufPtr->buf_out_size);
-        AuBufPtr->buf_out      = new char[AuBufPtr->buf_out_size];
+        AuBufPtr->buf_out = new char[AuBufPtr->buf_out_size];
         m_audioSocket->GetFFmpegBuff(sid, AuBufPtr->buf_out, AuBufPtr->buf_out_size);
+        *(unsigned int *)(AuBufPtr->buf_out + 4) = AuBufPtr->buf_out_size - 8;
     }
     else
     {

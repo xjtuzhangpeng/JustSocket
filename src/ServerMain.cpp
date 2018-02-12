@@ -148,7 +148,7 @@ void task_thread(std::string sid_head, int j)
     }
 }
 
-void test_ffmepg()
+void TestCase_ffmepg()
 {
     std::string sid_head = "Test-";
 
@@ -180,60 +180,68 @@ void test_ffmepg()
 }
 
 #define PATH_HEAD "/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio"
-#define MAX_SESSION_NUM 10
-#define SESSION_INCREMENT(sid) ((sid++) % MAX_SESSION_NUM)
+#define MAX_SESSION_NUM             10
+#define SESSION_INCREMENT(sid)      ((sid++) % MAX_SESSION_NUM)
+
 void TestCase_AudioFormat()
 {
     InitSessionNum(MAX_SESSION_NUM);
-    int sissionId = 0;
+/*  int sissionId = 0;
 
-    AVIOReading(PATH_HEAD "/ACM/mu-law.wav", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/mp3/8k/8k16bit_8kbps.mp3", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/mp3/8k/8k16bit_28kbps.mp3", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/mp3/8k/8k16bit_29kbps.mp3", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/mp3/8k/8k16bit_30kbps.mp3", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/ACM/mu-law.wav",                   SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/mp3/8k/8k16bit_8kbps.mp3",         SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/mp3/8k/8k16bit_28kbps.mp3",        SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/mp3/8k/8k16bit_29kbps.mp3",        SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/mp3/8k/8k16bit_30kbps.mp3",        SESSION_INCREMENT(sissionId));
     AVIOReading(PATH_HEAD "/mp3/44100/4410016bit_128kbps.mp3", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/mp3/4410016bit_128kbps.pcm", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/ACM/alaw.wav", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/ACM/GSM_6.10_13kbps.wav", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/ACM/mu-law.wav", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/adpcm/32kbps_ima_adpcm.wav", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/mp3/4410016bit_128kbps.pcm",       SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/ACM/alaw.wav",                     SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/ACM/GSM_6.10_13kbps.wav",          SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/ACM/mu-law.wav",                   SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/adpcm/32kbps_ima_adpcm.wav",       SESSION_INCREMENT(sissionId));
     AVIOReading(PATH_HEAD "/adpcm/32kbps_microsoft_adpcm.wav", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/m4a/63kbps.m4a", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/other/8kbps.wav", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/other/16kbps.wav", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/pcm/6k16bit_96kbps.wav", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/pcm/8k8bit_64kbps.wav", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/pcm/000194_5s000216_5s000110_5s000232_5s000262_5s000271_5s000324_5s_8k16bit_pcm.wav", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/pcm/0935584.wav", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/verint/XAGR1001_20160805144832_15732665238.WAV", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/verint/XAGR1001_20160805150802_053115688888654.WAV", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/voc/14424390610008.wav", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/voc/14432151710001.wav", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/voc/14432152210004.wav", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/voc/14440156310008.wav", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/mp3/music/test_1.MP3", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/mp3/music/test_2.MP3", SESSION_INCREMENT(sissionId));
-    AVIOReading(PATH_HEAD "/mp3/music/test_3.MP3", SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/m4a/63kbps.m4a",                   SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/other/8kbps.wav",                  SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/other/16kbps.wav",                 SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/pcm/6k16bit_96kbps.wav",           SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/pcm/8k8bit_64kbps.wav",            SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/pcm/000194_5s000216_5s000110_5s000232_5s000262_5s000271_5s000324_5s_8k16bit_pcm.wav",
+                                                               SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/pcm/0935584.wav",                  SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/verint/XAGR1001_20160805144832_15732665238.WAV",
+                                                               SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/verint/XAGR1001_20160805150802_053115688888654.WAV", 
+                                                               SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/voc/14424390610008.wav",           SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/voc/14432151710001.wav",           SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/voc/14432152210004.wav",           SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/voc/14440156310008.wav",           SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/mp3/music/test_1.MP3",             SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/mp3/music/test_2.MP3",             SESSION_INCREMENT(sissionId));
+    AVIOReading(PATH_HEAD "/mp3/music/test_3.MP3",             SESSION_INCREMENT(sissionId));
+*/
     return;
 }
+Audio2Pcm  g_Audio2Pcm(MAX_NUM_OF_THREAD);
 
-void TestCase_Audio2Pcm()
+void TestCase_HandleVoiceType_pcm()
 {
-    Audio2Pcm   audio2Pcm(MAX_NUM_OF_THREAD);
+    //pcm
+	LOG_PRINT_DEBUG("\n==========================================================================");
+    LOG_PRINT_DEBUG("TestCase_HandleVoiceType_pcm");
     DecodePara  para;
 
-    para.inWavName   = PATH_HEAD "/opus/111.wav";
-    para.outPath     = PATH_HEAD "/opus/";
+    para.inWavName   = PATH_HEAD "/pcm/8k16bit_128kbps.wav";
+    para.outPath     = "./";
     para.channel     = CHANNEL_MONO;
-    para.trueFormat  = pcm_spec;
+    para.trueFormat  = pcm;
     para.stereOnMode = STEREO_ON_1;
     para.sessionId   = 1;
 
-    audio2Pcm.audio2pcm(&para);
+    g_Audio2Pcm.audio2pcm(&para);
 
     char   *buf     = NULL;
-    size_t  buf_len = audio2Pcm.GetAudioBuf(para.sessionId, &buf);
+    size_t  buf_len = g_Audio2Pcm.GetAudioBuf(para.sessionId, &buf);
     if (buf_len == 0)
     {
         LOG_PRINT_DEBUG("buf is zero");
@@ -241,7 +249,7 @@ void TestCase_Audio2Pcm()
     }
     LOG_PRINT_DEBUG("buf-len %d", buf_len);
 
-    std::string sid = "VOC_tmp_1.wav";
+    std::string sid = "TestCase_HandleVoiceType_pcm.wav";
     LOG_PRINT_DEBUG("FileName: %s", sid.c_str());
     FILE *fp = fopen(sid.c_str(), "w+");
     fwrite(buf, buf_len, 1, fp);
@@ -249,18 +257,210 @@ void TestCase_Audio2Pcm()
     buf = NULL;
 }
 
+void TestCase_HandleVoiceType_pcm_spec()
+{
+    LOG_PRINT_DEBUG("\n==========================================================================");
+    LOG_PRINT_DEBUG("TestCase_HandleVoiceType_pcm_spec");
+    DecodePara  para;
+
+    para.inWavName   = PATH_HEAD "/pcm/8k8bit_64kbps.wav";
+    para.outPath     = "./";
+    para.channel     = CHANNEL_MONO;
+    para.trueFormat  = ffmpeg_8kbps;
+    para.stereOnMode = STEREO_ON_1;
+    para.sessionId   = 1;
+
+    g_Audio2Pcm.audio2pcm(&para);
+
+    char   *buf     = NULL;
+    size_t  buf_len = g_Audio2Pcm.GetAudioBuf(para.sessionId, &buf);
+    if (buf_len == 0)
+    {
+        LOG_PRINT_DEBUG("buf is zero");
+        return;
+    }
+    LOG_PRINT_DEBUG("buf-len %d", buf_len);
+
+    std::string sid = "TestCase_HandleVoiceType_pcm_spec.wav";
+    LOG_PRINT_DEBUG("FileName: %s", sid.c_str());
+    FILE *fp = fopen(sid.c_str(), "w+");
+    fwrite(buf, buf_len, 1, fp);
+    fclose(fp);
+    buf = NULL;
+}
+
+void TestCase_HandleVoiceType_vox()
+{
+    DecodePara  para;
+
+    para.inWavName   = PATH_HEAD "/pcm/8k8bit_64kbps.wav";
+    para.outPath     = "./";
+    para.channel     = CHANNEL_MONO;
+    para.trueFormat  = pcm_spec;
+    para.stereOnMode = STEREO_ON_1;
+    para.sessionId   = 1;
+
+    g_Audio2Pcm.audio2pcm(&para);
+
+    char   *buf     = NULL;
+    size_t  buf_len = g_Audio2Pcm.GetAudioBuf(para.sessionId, &buf);
+    if (buf_len == 0)
+    {
+        LOG_PRINT_DEBUG("buf is zero");
+        return;
+    }
+    LOG_PRINT_DEBUG("buf-len %d", buf_len);
+
+    std::string sid = "TestCase_HandleVoiceType_vox.wav";
+    LOG_PRINT_DEBUG("FileName: %s", sid.c_str());
+    FILE *fp = fopen(sid.c_str(), "w+");
+    fwrite(buf, buf_len, 1, fp);
+    fclose(fp);
+    buf = NULL;
+}
+
+void TestCase_1_HandleVoiceType_mp3_or_8k()
+{
+    LOG_PRINT_DEBUG("\n==========================================================================");
+    LOG_PRINT_DEBUG("TestCase_1_HandleVoiceType_mp3_or_8k");
+    DecodePara  para;
+
+    para.inWavName   = PATH_HEAD "/mp3/44100/4410016bit_128kbps.mp3";
+    para.outPath     = "./";
+    para.channel     = CHANNEL_MONO;
+    para.trueFormat  = mp3;
+    para.stereOnMode = STEREO_ON_1;
+    para.sessionId   = 1;
+
+    g_Audio2Pcm.audio2pcm(&para);
+
+    char   *buf     = NULL;
+    size_t  buf_len = g_Audio2Pcm.GetAudioBuf(para.sessionId, &buf);
+    if (buf_len == 0)
+    {
+        LOG_PRINT_DEBUG("buf is zero");
+        return;
+    }
+    LOG_PRINT_DEBUG("buf-len %d", buf_len);
+
+    std::string sid = "TestCase_1_HandleVoiceType_mp3_or_8k.wav";
+    LOG_PRINT_DEBUG("FileName: %s", sid.c_str());
+    FILE *fp = fopen(sid.c_str(), "w+");
+    fwrite(buf, buf_len, 1, fp);
+    fclose(fp);
+    buf = NULL;
+}
+
+void TestCase_2_HandleVoiceType_mp3_or_8k()
+{
+    LOG_PRINT_DEBUG("\n==========================================================================");
+    LOG_PRINT_DEBUG("TestCase_2_HandleVoiceType_mp3_or_8k");
+    DecodePara  para;
+
+    para.inWavName   = PATH_HEAD "/mp3/8k/8k16bit_28kbps.mp3";
+    para.outPath     = "./";
+    para.channel     = CHANNEL_MONO;
+    para.trueFormat  = mp3;
+    para.stereOnMode = STEREO_ON_1;
+    para.sessionId   = 1;
+
+    g_Audio2Pcm.audio2pcm(&para);
+
+    char   *buf     = NULL;
+    size_t  buf_len = g_Audio2Pcm.GetAudioBuf(para.sessionId, &buf);
+    if (buf_len == 0)
+    {
+        LOG_PRINT_DEBUG("buf is zero");
+        return;
+    }
+    LOG_PRINT_DEBUG("buf-len %d", buf_len);
+
+    std::string sid = "TestCase_2_HandleVoiceType_mp3_or_8k.wav";
+    LOG_PRINT_DEBUG("FileName: %s", sid.c_str());
+    FILE *fp = fopen(sid.c_str(), "w+");
+    fwrite(buf, buf_len, 1, fp);
+    fclose(fp);
+    buf = NULL;
+}
+
+void TestCase_3_HandleVoiceType_mp3_or_8k()
+{
+    LOG_PRINT_DEBUG("\n==========================================================================");
+    LOG_PRINT_DEBUG("TestCase_3_HandleVoiceType_mp3_or_8k");
+    DecodePara  para;
+
+    para.inWavName   = PATH_HEAD "/mp3/music/test_1.MP3";
+    para.outPath     = "./";
+    para.channel     = CHANNEL_UNKNOW;
+    para.trueFormat  = mp3;
+    para.stereOnMode = STEREO_ON_1;
+    para.sessionId   = 1;
+
+    g_Audio2Pcm.audio2pcm(&para);
+
+    char   *buf     = NULL;
+    size_t  buf_len = g_Audio2Pcm.GetAudioBuf(para.sessionId, &buf);
+    if (buf_len == 0)
+    {
+        LOG_PRINT_DEBUG("buf is zero");
+        return;
+    }
+    LOG_PRINT_DEBUG("buf-len %d", buf_len);
+
+    std::string sid = "TestCase_3_HandleVoiceType_mp3_or_8k.wav";
+    LOG_PRINT_DEBUG("FileName: %s", sid.c_str());
+    FILE *fp = fopen(sid.c_str(), "w+");
+    fwrite(buf, buf_len, 1, fp);
+    fclose(fp);
+    buf = NULL;
+}
+
+void TestCase_HandleVoiceType_alaw()
+{
+    LOG_PRINT_DEBUG("\n==========================================================================");
+    LOG_PRINT_DEBUG("TestCase_HandleVoiceType_alaw");
+    DecodePara  para;
+
+    para.inWavName   = PATH_HEAD "/ACM/alaw.wav";
+    para.outPath     = "./";
+    para.channel     = CHANNEL_UNKNOW;
+    para.trueFormat  = acm;
+    para.stereOnMode = STEREO_ON_1;
+    para.sessionId   = 1;
+
+    g_Audio2Pcm.audio2pcm(&para);
+
+    char   *buf     = NULL;
+    size_t  buf_len = g_Audio2Pcm.GetAudioBuf(para.sessionId, &buf);
+    if (buf_len == 0)
+    {
+        LOG_PRINT_DEBUG("buf is zero");
+        return;
+    }
+    LOG_PRINT_DEBUG("buf-len %d", buf_len);
+
+    std::string sid = "TestCase_HandleVoiceType_alaw.wav";
+    LOG_PRINT_DEBUG("FileName: %s", sid.c_str());
+    FILE *fp = fopen(sid.c_str(), "w+");
+    fwrite(buf, buf_len, 1, fp);
+    fclose(fp);
+    buf = NULL;
+}
+
+
 int main(int agrs, char *argv[])
 {
-    std::string  filePath    = "/home/zhangpeng/workspace/zhangpeng/Test/JustSocket/Audio/mp3/";
-    std::string  tempWavName = filePath + "4410016bit_128kbps";
-    std::string  sox_cmd     = SOX_VOX_1((tempWavName + ".pcm"), (tempWavName + ".wav"));
-
     LOG_PRINT_DEBUG("PCM_HEAD = %d", sizeof(PCM_HEAD));
-    //LOG_PRINT_DEBUG("Cmd: %s", sox_cmd.c_str());
 
     //test_ffmepg();
     //TestCase_AudioFormat();
-    TestCase_Audio2Pcm();
+    // mono
+    TestCase_HandleVoiceType_pcm();
+    TestCase_HandleVoiceType_pcm_spec();
+    TestCase_1_HandleVoiceType_mp3_or_8k();
+    TestCase_2_HandleVoiceType_mp3_or_8k();
+    //TestCase_3_HandleVoiceType_mp3_or_8k(); // 双声道 
+    TestCase_HandleVoiceType_alaw();
 
     return 0;
 }
